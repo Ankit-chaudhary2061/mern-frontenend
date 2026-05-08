@@ -1,15 +1,7 @@
+import { Category, User } from "../product/product-slice-types"
 import { Status } from "../types/global-types"
 
-export interface User {
-  id: string
-  email: string
-  username: string
-}
 
-export interface Category {
-  id: string
-  categoryName: string
-}
 
 export interface Product {
   id: string
@@ -38,9 +30,13 @@ export interface Product {
   createdBy: User
   category: Category
 }
+export interface CartItem{
+    Product:Product,
+    quantity : number,
+    productId:string
+}
 
-export interface ProductState {
-  product: Product[]
-  status: Status
-  singleProduct: Product | null
+export interface CartState{
+    items : CartItem[],
+    status:Status
 }

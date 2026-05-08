@@ -12,15 +12,15 @@ import TopSearchedSpots from "./home/tea-destination";
 export default function Home() {
   return (
     <>
-    <Header/>
+  
     <Banner/>
     <AboutUs/>
     <Product/>
-    <ShowHideProduct/>
+    {/* <ShowHideProduct/> */}
     <ProductFeature/>
     <StorySection/>
     <TopSearchedSpots/>
-    <Footer/>
+  
     </>
   );
 }

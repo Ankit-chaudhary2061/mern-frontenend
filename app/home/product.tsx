@@ -3,9 +3,42 @@
 import Image from 'next/image';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
+const PRODUCTS = [
+  {
+    id: '1',
+    title: 'Roasted Green Tea',
+    description:
+      'Expertly crafted from freshly picked leaves, our roasted green tea offers a smooth, rich flavor with a distinctive aroma.',
+    image: '/image/rampokh-about-us.jpg',
+  },
+  {
+    id: '2',
+    title: 'Orthodox Black Tea',
+    description:
+      'Bold, rich, and handcrafted black tea fully oxidized for deep flavor and smooth finish.',
+    image: '/image/rampokh-about-us.jpg',
+  },
+  {
+    id: '3',
+    title: 'Pearl Green Tea',
+    description:
+      'Delicately rolled green tea with natural sweetness and rich antioxidants.',
+    image: '/image/rampokh-about-us.jpg',
+  },
+  {
+    id: '4',
+    title: 'Oolong Tea',
+    description:
+      'Partially fermented tea with smooth aroma and premium taste.',
+    image: '/image/rampokh-about-us.jpg',
+  },
+];
 
 const Product = () => {
+  const [showAll, setShowAll] = useState(false);
+
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -14,180 +47,108 @@ const Product = () => {
     });
   }, []);
 
+  const visibleProducts = showAll ? PRODUCTS : PRODUCTS.slice(0, 3);
+
   return (
     <div className='bg-[rgb(247,244,244)] w-full'>
       <div className='container mx-auto'>
         <div className='pt-[64px]'>
-          <div className='grid grid-cols-12 gap-6 items-start w-full'>
-            <div className='col-span-12' data-aos='zoom-in-up'>
-              <h2 className='text-[32px] leading-[32px] font-bold'>
-                Our Products
-              </h2>
+
+          <h2 className='text-[32px] leading-[32px] font-bold'>
+            Our Products
+          </h2>
+
+          <div className='pt-[54px]'>
+
+            {visibleProducts.map((product, index) => (
               <div
-                className='pt-[54px] grid grid-cols-12 gap-6 items-center w-full'
+                key={product.id}
+                className='col-span-12 md:col-span-12 mb-[32px]'
                 data-aos='zoom-in-up'
               >
-                {/* --- Product 1 --- */}
-                <div className='col-span-12 md:col-span-12 mb-[32px]'>
-                  {/* Mobile view */}
-                  <div className='md:hidden'>
-                    <div className='relative w-full rounded-xl overflow-hidden aspect-[16/9] mb-4'>
-                      <Image
-                        src='/image/rampokh-about-us.jpg'
-                        alt='Roasted Green Tea'
-                        className='object-cover'
-                        fill
-                        sizes='100vw'
-                      />
-                    </div>
 
-                    <h3 className='text-[24px] leading-[28px] font-bold text-[#326E3B] mb-2'>
-                      Roasted Green Tea
-                    </h3>
-                    <p className='text-[14px] leading-[24px] text-gray-700'>
-                      Expertly crafted from freshly picked leaves, our roasted
-                      green tea offers a smooth, rich flavor with a distinctive
-                      aroma. Carefully roasted and dried to preserve its natural
-                      qualities, it is rich in antioxidants and known for
-                      promoting brain function, supporting metabolism, and
-                      enhancing overall well-being.
-                    </p>
+                {/* MOBILE VIEW (UNCHANGED) */}
+                <div className='md:hidden'>
+                  <div className='relative w-full rounded-xl overflow-hidden aspect-[16/9] mb-4'>
+                    <Image
+                      src={product.image}
+                      alt={product.title}
+                      className='object-cover'
+                      fill
+                      sizes='100vw'
+                    />
                   </div>
 
-                  {/* Desktop/tablet view */}
-                  <div className='hidden md:grid md:grid-cols-12 md:gap-6 md:items-center'>
-                    <div className='col-span-6 mb-[32px] relative h-[350px] rounded-xl overflow-hidden'>
-                      <Image
-                        src='/image/rampokh-about-us.jpg'
-                        alt='Roasted Green Tea'
-                        className='object-cover'
-                        fill
-                        sizes='50vw'
-                      />
-                    </div>
-                    <div className='col-start-8 col-span-5 mb-[32px]'>
-                      <h3 className='text-[32px] leading-[32px] font-bold text-[#326E3B] mb-[32px]'>
-                        Roasted Green Tea
-                      </h3>
-                      <p className='text-[16px] leading-[28px] text-gray-700'>
-                        Expertly crafted from freshly picked leaves, our roasted
-                        green tea offers a smooth, rich flavor with a
-                        distinctive aroma. Carefully roasted and dried to
-                        preserve its natural qualities, it is rich in
-                        antioxidants and known for promoting brain function,
-                        supporting metabolism, and enhancing overall well-being.
-                      </p>
-                    </div>
-                  </div>
+                  <h3 className='text-[24px] leading-[28px] font-bold text-[#326E3B] mb-2'>
+                    {product.title}
+                  </h3>
+
+                  <p className='text-[14px] leading-[24px] text-gray-700'>
+                    {product.description}
+                  </p>
                 </div>
 
-                {/* --- Product 2 --- */}
-                <div className='col-span-12 md:col-span-12 mb-[32px]'>
-                  {/* Mobile view */}
-                  <div className='md:hidden'>
-                    <div className='relative h-[250px] w-full rounded-xl overflow-hidden mb-4'>
-                      <Image
-                        src='/image/rampokh-about-us.jpg'
-                        alt='Orthodox Black Tea'
-                        className='object-cover'
-                        fill
-                        sizes='100vw'
-                      />
-                    </div>
-                    <h3 className='text-[24px] leading-[28px] font-bold text-[#326E3B] mb-2'>
-                      Orthodox Black Tea
-                    </h3>
-                    <p className='text-[14px] leading-[24px] text-gray-700'>
-                      Bold, rich, and handcrafted, our Orthodox Black Tea is
-                      fully oxidized for a deep flavor and smooth finish. Made
-                      from premium Camellia sinensis leaves, it&apos;s rich in
-                      unique antioxidants that support heart health, digestion,
-                      and overall wellness — a perfect energizing brew for tea
-                      lovers.
-                    </p>
-                  </div>
+                {/* DESKTOP VIEW (UNCHANGED STRUCTURE) */}
+                <div className='hidden md:grid md:grid-cols-12 md:gap-6 md:items-center'>
 
-                  {/* Desktop/tablet view */}
-                  <div className='hidden md:grid md:grid-cols-12 md:gap-6 md:items-center'>
-                    <div className='col-span-5 mb-[32px]'>
-                      <h3 className='text-[32px] leading-[32px] font-bold text-[#326E3B] mb-[32px]'>
-                        Orthodox Black Tea
-                      </h3>
-                      <p className='text-[16px] leading-[28px] text-gray-700'>
-                        Bold, rich, and handcrafted, our Orthodox Black Tea is
-                        fully oxidized for a deep flavor and smooth finish. Made
-                        from premium Camellia sinensis leaves, it&apos;s rich in
-                        unique antioxidants that support heart health,
-                        digestion, and overall wellness — a perfect energizing
-                        brew for tea lovers seeking both strength and benefits.
-                      </p>
-                    </div>
-                    <div className='col-start-7 col-span-6 mb-[32px] relative h-[350px] rounded-xl overflow-hidden'>
-                      <Image
-                        src='/image/rampokh-about-us.jpg'
-                        alt='Orthodox Black Tea'
-                        className='object-cover'
-                        fill
-                        sizes='50vw'
-                      />
-                    </div>
-                  </div>
-                </div>
+                  {index % 2 === 0 ? (
+                    <>
+                      <div className='col-span-6 mb-[32px] relative h-[350px] rounded-xl overflow-hidden'>
+                        <Image
+                          src={product.image}
+                          alt={product.title}
+                          className='object-cover'
+                          fill
+                          sizes='50vw'
+                        />
+                      </div>
 
-                {/* --- Product 3 --- */}
-                <div className='col-span-12 md:col-span-12 mb-[32px]'>
-                  {/* Mobile view */}
-                  <div className='md:hidden'>
-                    <div className='relative h-[250px] w-full rounded-xl overflow-hidden mb-4'>
-                      <Image
-                        src='/image/rampokh-about-us.jpg'
-                        alt='Pearl Green Tea'
-                        className='object-cover'
-                        fill
-                        sizes='100vw'
-                      />
-                    </div>
-                    <h3 className='text-[24px] leading-[28px] font-bold text-[#326E3B] mb-2'>
-                      Pearl Green Tea
-                    </h3>
-                    <p className='text-[14px] leading-[24px] text-gray-700'>
-                      Crafted from tender, hand-picked second-flush leaves, our
-                      Pearl Green Tea is delicately rolled for a smooth,
-                      refreshing taste with natural sweetness. Rich in
-                      antioxidants and nutrients, it supports overall wellness
-                      while offering exceptional flavor — a perfect balance of
-                      health and taste.
-                    </p>
-                  </div>
+                      <div className='col-start-8 col-span-5 mb-[32px]'>
+                        <h3 className='text-[32px] leading-[32px] font-bold text-[#326E3B] mb-[32px]'>
+                          {product.title}
+                        </h3>
+                        <p className='text-[16px] leading-[28px] text-gray-700'>
+                          {product.description}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className='col-span-5 mb-[32px]'>
+                        <h3 className='text-[32px] leading-[32px] font-bold text-[#326E3B] mb-[32px]'>
+                          {product.title}
+                        </h3>
+                        <p className='text-[16px] leading-[28px] text-gray-700'>
+                          {product.description}
+                        </p>
+                      </div>
 
-                  {/* Desktop/tablet view */}
-                  <div className='hidden md:grid md:grid-cols-12 md:gap-6 md:items-center'>
-                    <div className='col-span-6 mb-[32px] relative h-[350px] rounded-xl overflow-hidden'>
-                      <Image
-                        src='/image/rampokh-about-us.jpg'
-                        alt='Pearl Green Tea'
-                        className='object-cover'
-                        fill
-                        sizes='50vw'
-                      />
-                    </div>
-                    <div className='col-start-8 col-span-5 mb-[32px]'>
-                      <h3 className='text-[32px] leading-[32px] font-bold text-[#326E3B] mb-[32px]'>
-                        Pearl Green Tea
-                      </h3>
-                      <p className='text-[16px] leading-[28px] text-gray-700'>
-                        Crafted from tender, hand-picked second-flush leaves,
-                        our Pearl Green Tea is delicately rolled for a smooth,
-                        refreshing taste with natural sweetness. Rich in
-                        antioxidants and nutrients, it supports overall wellness
-                        while offering exceptional flavor — a perfect balance of
-                        health and taste.
-                      </p>
-                    </div>
-                  </div>
+                      <div className='col-start-7 col-span-6 mb-[32px] relative h-[350px] rounded-xl overflow-hidden'>
+                        <Image
+                          src={product.image}
+                          alt={product.title}
+                          className='object-cover'
+                          fill
+                          sizes='50vw'
+                        />
+                      </div>
+                    </>
+                  )}
+
                 </div>
               </div>
+            ))}
+
+            {/* BUTTON */}
+            <div className='flex justify-center pb-[33px]'>
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className='bg-[#326E3B] hover:bg-[#2a5a32] text-white px-[32px] py-[16px] font-bold text-[16px] transition-colors duration-200 flex items-center gap-2 rounded-md cursor-pointer'
+              >
+                {showAll ? 'Show Less' : 'View More Products'}
+              </button>
             </div>
+
           </div>
         </div>
       </div>

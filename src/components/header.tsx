@@ -41,13 +41,16 @@ const Header = () => {
           {/* RIGHT - Actions */}
           <div className="hidden md:flex items-center gap-6 text-white">
 
-            <button className="relative hover:scale-110 transition">
-              <ShoppingCart size={22} />
-              {/* Optional cart badge */}
-              <span className="absolute -top-2 -right-2 bg-white text-[#326E3B] text-xs px-1 rounded-full">
-                2
-              </span>
-            </button>
+           <Link
+  href="/cart"
+  className="relative hover:scale-110 transition"
+>
+  <ShoppingCart size={22} />
+
+  <span className="absolute -top-2 -right-2 bg-white text-[#326E3B] text-xs px-1 rounded-full">
+    2
+  </span>
+</Link>
 
             <button className="flex items-center gap-2 hover:text-gray-200 transition">
               <LogOut size={20} />

@@ -9,10 +9,10 @@ import Footer from "@/src/components/footer"
 const About =()=>{
     return(
         <>
-        <Header/>
+      
         
         <AboutUsSection/>
-        <Footer/>
+       
     
         </>
     )

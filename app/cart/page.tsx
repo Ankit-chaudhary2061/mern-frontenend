@@ -1,0 +1,242 @@
+"use client";
+import Link from "next/link";
+
+import Image from "next/image";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/src/lib/store/hook";
+import { deleteCartItem, fetchCartItems, updateCartItem, updateCartItemThunk } from "@/src/lib/store/cart/cart-slice";
+import Header from "@/src/components/header";
+import Footer from "@/src/components/footer";
+
+const CartPage = ()=>{
+  
+  const dispatch= useAppDispatch()
+  const {items,status} = useAppSelector((store)=>store.cart)
+  console.log(items,':cartitems')
+
+useEffect(() => {
+  dispatch(fetchCartItems());
+}, [dispatch]);
+
+const handleDelete = async (productId: string) => {
+  await dispatch(deleteCartItem(productId))
+  console.log("DELETE clicked, productId =", productId);;
+  dispatch(fetchCartItems());
+};
+
+const handleUpdate = async (productId: string, quantity: number) => {
+  await dispatch(updateCartItemThunk(productId, quantity));
+  dispatch(fetchCartItems());
+};
+    
+const totalItemInCarts =items.reduce((total,item)=>total + item.quantity,0)
+ const totalPriceInCarts = items.reduce(
+    (total, item) => total + item.quantity * Number(item.Product?.price || 0),
+    0
+  );
+    // Loading State
+
+
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <p className="text-lg font-medium">Loading cart...</p>
+      </div>
+    );
+  }
+
+  // Empty Cart State
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
+          <p className="text-gray-600">Add some products to get started!</p>
+        </div>
+      </div>
+    );
+  }
+    return(
+        <>
+        <Header/>
+  <div className="min-h-screen bg-[#f7fff4] py-12 px-4">
+  <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    {/* Cart Section */}
+    <div className="lg:col-span-2 bg-white rounded-3xl shadow-md border border-[#d9f2d2] p-8">
+      
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-3xl font-bold text-[#2d6a4f]">
+          Shopping Cart
+        </h2>
+
+        <div className="bg-[#e9f9e5] text-[#2d6a4f] px-4 py-2 rounded-full text-sm font-semibold">
+          {totalItemInCarts} Items
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        {items.map((item) => (
+          <div
+            key={item.Product.id}
+            className="border border-[#dff3d7] rounded-2xl p-5 hover:shadow-md transition-all duration-300 bg-[#fcfffb]"
+          >
+            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+              
+              {/* Image */}
+              <div className="w-full md:w-[140px] h-[140px] relative overflow-hidden rounded-2xl bg-[#f4fff1] border border-[#dff3d7]">
+               <Image
+  src={
+    item.Product?.coverImage?.path
+      ? `http://localhost:5000/${item.Product.coverImage.path}`
+      : "/placeholder.png"
+  }
+  alt={item.Product?.name || "product"}
+  width={120}
+  height={120}
+  className="rounded-xl object-cover"
+/>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold text-[#2d6a4f] mb-2">
+                  {item.Product?.name}
+                </h3>
+
+                <p className="text-gray-600 leading-7 text-sm">
+                  {item.Product?.description}
+                </p>
+
+                <div className="mt-4 flex items-center gap-3">
+                  <span className="text-[#f59e0b] text-2xl font-bold">
+                    ₹{item.Product?.price}
+                  </span>
+                </div>
+              </div>
+
+              {/* Quantity + Remove */}
+              <div className="flex flex-col gap-4 items-start md:items-end">
+                
+                {/* Quantity */}
+                <div className="flex items-center bg-[#f3fff0] border border-[#ccebc5] rounded-xl overflow-hidden">
+                  
+                  <button
+                    onClick={() =>
+                      handleUpdate(
+                        item.Product.id,
+                        item.quantity - 1
+                      )
+                    }
+                    disabled={item.quantity <= 1}
+                    className="w-10 h-10 text-lg font-bold text-[#2d6a4f] hover:bg-[#dff3d7] disabled:opacity-40"
+                  >
+                    -
+                  </button>
+
+                  <span className="w-12 text-center font-semibold text-[#2d6a4f]">
+                    {item.quantity}
+                  </span>
+
+                  <button
+                    onClick={() =>
+                      handleUpdate(
+                        item.Product.id,
+                        item.quantity + 1
+                      )
+                    }
+                    className="w-10 h-10 text-lg font-bold text-[#2d6a4f] hover:bg-[#dff3d7]"
+                  >
+                    +
+                  </button>
+                </div>
+
+                {/* Total */}
+                <p className="text-xl font-bold text-[#2d6a4f]">
+                  ₹
+                  {(
+                    Number(item.Product?.price || 0) *
+                    item.quantity
+                  ).toLocaleString()}
+                </p>
+
+                {/* Remove */}
+                <button
+                  onClick={() =>
+                    handleDelete(item.Product.id)
+                  }
+                  className="bg-[#fff4e5] hover:bg-[#ffe7bf] text-[#f59e0b] px-5 py-2 rounded-xl font-semibold transition-all"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Summary */}
+    <div className="bg-white rounded-3xl shadow-md border border-[#d9f2d2] p-8 h-fit sticky top-6">
+      
+      <h2 className="text-3xl font-bold text-[#2d6a4f] mb-8">
+        Order Summary
+      </h2>
+
+      <div className="space-y-5">
+        
+        <div className="flex justify-between text-gray-700">
+          <span>Total Items</span>
+          <span className="font-semibold">
+            {totalItemInCarts}
+          </span>
+        </div>
+
+        <div className="flex justify-between text-gray-700">
+          <span>Subtotal</span>
+          <span className="font-semibold">
+            ₹{totalPriceInCarts.toLocaleString()}
+          </span>
+        </div>
+
+        <div className="flex justify-between text-gray-700">
+          <span>Delivery Fee</span>
+          <span className="font-semibold text-[#f59e0b]">
+            ₹200
+          </span>
+        </div>
+
+        <div className="border-t border-[#dff3d7] pt-5 flex justify-between text-2xl font-bold text-[#2d6a4f]">
+          <span>Total</span>
+
+          <span>
+            ₹
+            {(totalPriceInCarts + 200).toLocaleString()}
+          </span>
+        </div>
+      </div>
+
+      <Link href="/checkout">
+        <button className="w-full mt-8 bg-[#2d6a4f] hover:bg-[#245c43] text-white py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-md hover:shadow-xl">
+          Checkout Now
+        </button>
+      </Link>
+
+      <div className="mt-6 bg-[#fff8ed] border border-[#ffe2b5] rounded-2xl p-4">
+        <p className="text-sm text-[#d97706] leading-6">
+          Secure checkout with fast delivery and premium tea products.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<Footer/>
+        
+        
+        </>
+    )
+}
+
+
+export default CartPage
