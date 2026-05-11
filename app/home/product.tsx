@@ -4,39 +4,17 @@ import Image from 'next/image';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useEffect, useState } from 'react';
-
-const PRODUCTS = [
-  {
-    id: '1',
-    title: 'Roasted Green Tea',
-    description:
-      'Expertly crafted from freshly picked leaves, our roasted green tea offers a smooth, rich flavor with a distinctive aroma.',
-    image: '/image/rampokh-about-us.jpg',
-  },
-  {
-    id: '2',
-    title: 'Orthodox Black Tea',
-    description:
-      'Bold, rich, and handcrafted black tea fully oxidized for deep flavor and smooth finish.',
-    image: '/image/rampokh-about-us.jpg',
-  },
-  {
-    id: '3',
-    title: 'Pearl Green Tea',
-    description:
-      'Delicately rolled green tea with natural sweetness and rich antioxidants.',
-    image: '/image/rampokh-about-us.jpg',
-  },
-  {
-    id: '4',
-    title: 'Oolong Tea',
-    description:
-      'Partially fermented tea with smooth aroma and premium taste.',
-    image: '/image/rampokh-about-us.jpg',
-  },
-];
+import { useAppDispatch, useAppSelector } from '@/src/lib/store/hook';
+import { fetchProduct } from '@/src/lib/store/product/product-slice';
 
 const Product = () => {
+  const dispatch = useAppDispatch();
+  const { product } = useAppSelector((store) => store.product);
+console.log(product,':product')
+  useEffect(() => {
+    dispatch(fetchProduct());
+  }, [dispatch]);
+
   const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
@@ -47,43 +25,43 @@ const Product = () => {
     });
   }, []);
 
-  const visibleProducts = showAll ? PRODUCTS : PRODUCTS.slice(0, 3);
+  const visibleProducts = showAll ? product : product.slice(0, 3);
 
   return (
     <div className='bg-[rgb(247,244,244)] w-full'>
       <div className='container mx-auto'>
-        <div className='pt-[64px]'>
+        <div className='pt-16'>
 
-          <h2 className='text-[32px] leading-[32px] font-bold'>
+          <h2 className='text-3xl leading-8 font-bold text-black'>
             Our Products
           </h2>
 
-          <div className='pt-[54px]'>
+          <div className='pt-14'>
 
-            {visibleProducts.map((product, index) => (
-              <div
-                key={product.id}
-                className='col-span-12 md:col-span-12 mb-[32px]'
-                data-aos='zoom-in-up'
-              >
+           {visibleProducts.map((product) => (
+  <div
+    key={ product._id}
+    className='col-span-12 md:col-span-12 mb-8'
+    data-aos='zoom-in-up'
+  >
 
                 {/* MOBILE VIEW (UNCHANGED) */}
                 <div className='md:hidden'>
-                  <div className='relative w-full rounded-xl overflow-hidden aspect-[16/9] mb-4'>
+                  <div className='relative w-full rounded-xl overflow-hidden aspect-video mb-4'>
                     <Image
-                      src={product.image}
-                      alt={product.title}
+                      src={product.image?.[0]?.path}
+                      alt={product.name}
                       className='object-cover'
                       fill
                       sizes='100vw'
                     />
                   </div>
 
-                  <h3 className='text-[24px] leading-[28px] font-bold text-[#326E3B] mb-2'>
-                    {product.title}
+                  <h3 className='text-2xl leading-7 font-bold text-[#326E3B] mb-2'>
+                    {product.name}
                   </h3>
 
-                  <p className='text-[14px] leading-[24px] text-gray-700'>
+                  <p className='text-sm leading-6 text-gray-700'>
                     {product.description}
                   </p>
                 </div>
@@ -91,42 +69,43 @@ const Product = () => {
                 {/* DESKTOP VIEW (UNCHANGED STRUCTURE) */}
                 <div className='hidden md:grid md:grid-cols-12 md:gap-6 md:items-center'>
 
-                  {index % 2 === 0 ? (
+                  {visibleProducts.indexOf(product) % 2 === 0 ? (
                     <>
-                      <div className='col-span-6 mb-[32px] relative h-[350px] rounded-xl overflow-hidden'>
+                      <div className='col-span-6 mb-8 relative h-[350px] rounded-xl overflow-hidden'>
                         <Image
-                          src={product.image}
-                          alt={product.title}
+                          src={product.image?.[0]?.path}
+                          alt={product.name}
                           className='object-cover'
                           fill
                           sizes='50vw'
                         />
                       </div>
 
-                      <div className='col-start-8 col-span-5 mb-[32px]'>
-                        <h3 className='text-[32px] leading-[32px] font-bold text-[#326E3B] mb-[32px]'>
-                          {product.title}
+                      <div className='col-start-8 col-span-5 mb-8'>
+                        <h3 className='text-3xl leading-8 font-bold text-[#326E3B] mb-8'>
+                          {product.name}
                         </h3>
-                        <p className='text-[16px] leading-[28px] text-gray-700'>
+                        <p className='text-base leading-7 text-gray-700'>
                           {product.description}
                         </p>
                       </div>
                     </>
                   ) : (
                     <>
-                      <div className='col-span-5 mb-[32px]'>
-                        <h3 className='text-[32px] leading-[32px] font-bold text-[#326E3B] mb-[32px]'>
-                          {product.title}
+                      <div className='col-span-5 mb-8'>
+                        <h3 className='text-3xl leading-8 font-bold text-[#326E3B] mb-8'>
+                          {product.name}
+           
                         </h3>
-                        <p className='text-[16px] leading-[28px] text-gray-700'>
+                        <p className='text-base leading-7 text-gray-700'>
                           {product.description}
                         </p>
                       </div>
 
-                      <div className='col-start-7 col-span-6 mb-[32px] relative h-[350px] rounded-xl overflow-hidden'>
+                      <div className='col-start-7 col-span-6 mb-8 relative h-[350px] rounded-xl overflow-hidden'>
                         <Image
-                          src={product.image}
-                          alt={product.title}
+                          src={product.image?.[0]?.path}
+                          alt={product.name}
                           className='object-cover'
                           fill
                           sizes='50vw'
@@ -140,10 +119,10 @@ const Product = () => {
             ))}
 
             {/* BUTTON */}
-            <div className='flex justify-center pb-[33px]'>
+            <div className='flex justify-center pb-8'>
               <button
                 onClick={() => setShowAll(!showAll)}
-                className='bg-[#326E3B] hover:bg-[#2a5a32] text-white px-[32px] py-[16px] font-bold text-[16px] transition-colors duration-200 flex items-center gap-2 rounded-md cursor-pointer'
+                className='bg-[#326E3B] hover:bg-[#2a5a32] text-white px-8 py-4 font-bold text-base transition-colors duration-200 flex items-center gap-2 rounded-md cursor-pointer'
               >
                 {showAll ? 'Show Less' : 'View More Products'}
               </button>

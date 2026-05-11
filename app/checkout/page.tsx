@@ -1,0 +1,425 @@
+"use client"
+import { orderItem } from "@/src/lib/store/checkout/checkout-slice";
+import { ItemDetails, OrderData, PaymentMethod } from "@/src/lib/store/checkout/checkout-slice-types";
+import { useAppDispatch, useAppSelector } from "@/src/lib/store/hook";
+import { Status } from "@/src/lib/store/types/global-types";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+
+
+
+
+const CheckoutPage = () => {
+    const router = useRouter()
+    const dispatch = useAppDispatch()
+    const {items}=useAppSelector((store)=>store.cart)
+    const {khaltiUrl,status}=useAppSelector((store)=>store.order)
+
+    const subtotal = items.reduce(
+      (total, item) => total + item.quantity * Number(item.Product?.price || 0),
+      0
+    )
+
+    const shippingFee = 200
+    const totalAmount = subtotal + shippingFee
+
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.COD)
+    const [data, setData] = useState<OrderData>({
+      shippingAddress: '',
+      phoneNumber: '',
+      totalAmount: 0,
+      paymentDetails: {
+        paymentMethod: PaymentMethod.COD,
+      },
+      items: [],
+    })
+
+const handlePaymentMethod = (e: ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value as PaymentMethod;
+
+  setPaymentMethod(value);
+
+  setData((prev) => ({
+    ...prev,
+    paymentDetails: {
+      paymentMethod: value,
+    },
+  }));
+};
+
+const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target
+  setData((prev) => ({
+    ...prev,
+    [name]: value,
+  }))
+}
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+
+  if (!items.length) {
+    return
+  }
+
+  const itemDetails: ItemDetails[] = items.map((item) => ({
+    productId: item.productId,
+    quantity: item.quantity,
+  }))
+
+  const orderData: OrderData = {
+    ...data,
+    items: itemDetails,
+    totalAmount,
+  }
+
+  await dispatch(orderItem(orderData))
+}
+
+useEffect(() => {
+  if (status === Status.SUCCESS && paymentMethod === PaymentMethod.COD) {
+    alert("Order placed successfully 🎉");
+    router.push("/");
+  } else if (status === Status.SUCCESS && paymentMethod !== PaymentMethod.COD && khaltiUrl) {
+    window.location.href = khaltiUrl;
+  }
+}, [status, khaltiUrl, paymentMethod, router]);
+
+
+return (
+  <div className="min-h-screen bg-linear-to-br from-orange-50 via-yellow-50 to-green-50">
+    
+    {/* Header */}
+    <div className="border-b border-orange-100 bg-white/80 backdrop-blur-sm sticky top-0 z-20">
+      <div className="mx-auto max-w-7xl px-4 py-6">
+        <h1 className="text-3xl font-bold text-gray-900">
+          Checkout
+        </h1>
+
+        <p className="mt-2 text-sm text-gray-600">
+          Complete your order securely and quickly
+        </p>
+      </div>
+    </div>
+
+    {/* Main */}
+    <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 lg:grid-cols-2">
+      
+      {/* LEFT SIDE */}
+      <div>
+        {/* Title */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Order Summary
+          </h2>
+
+          <p className="mt-1 text-sm text-gray-600">
+            Review your selected products
+          </p>
+        </div>
+
+        {/* Products */}
+        <div className="space-y-6">
+          {items.length > 0 &&
+            items.map((item) => (
+              <div
+                key={item.Product.id}
+                className="group relative overflow-hidden rounded-3xl border border-orange-100 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              >
+                {/* Top Glow */}
+                <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-orange-400 via-yellow-400 to-green-400" />
+
+                <div className="flex gap-5">
+                  
+                  {/* Image */}
+                  <div className="relative">
+                    <img
+                      src={item.Product.image?.[0]?.path}
+                      alt={item.Product.name}
+                      className="h-32 w-32 rounded-2xl object-cover border border-orange-100"
+                    />
+
+                    {/* Quantity */}
+                    <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white shadow-lg">
+                      {item.quantity}
+                    </span>
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex flex-1 flex-col justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {item.Product.name}
+                      </h3>
+
+                      <span className="mt-2 inline-block rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
+                        {item.Product.category.categoryName}
+                      </span>
+                    </div>
+
+                    <div className="mt-5 flex items-end justify-between">
+                      <div>
+                        <p className="text-sm text-gray-500">
+                          Price
+                        </p>
+
+                        <p className="text-2xl font-bold text-green-600">
+                          Rs.{" "}
+                          {item.Product.price * item.quantity}
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl bg-orange-50 px-3 py-2 text-sm font-medium text-orange-700">
+                        Rs. {item.Product.price} each
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
+
+        {/* Payment Methods */}
+        {/* Payment Methods */}
+<div className="mt-10 rounded-3xl border border-orange-100 bg-white p-6 shadow-sm">
+  <h3 className="text-xl font-bold text-gray-900">
+    Payment Method
+  </h3>
+
+  <div className="mt-6 space-y-4">
+
+    {/* COD */}
+    <label
+      className="flex cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 transition-all duration-300
+      hover:border-blue-400
+      has-checked:border-blue-500
+      has-checked:bg-blue-50"
+    >
+      <input
+        type="radio"
+        name="payment"
+        value={PaymentMethod.COD}
+        checked={paymentMethod === PaymentMethod.COD}
+        onChange={handlePaymentMethod}
+        className="h-5 w-5 accent-blue-500"
+      />
+
+      <div className="flex-1">
+        <p className="font-semibold text-gray-900">
+          Cash on Delivery
+        </p>
+
+        <p className="text-sm text-gray-500">
+          Pay after receiving your order
+        </p>
+      </div>
+
+      <div className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+        COD
+      </div>
+    </label>
+
+    {/* Khalti */}
+    <label
+      className="flex cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 transition-all duration-300
+      hover:border-purple-400
+      has-checked:border-purple-500
+      has-checked:bg-purple-50"
+    >
+      <input
+        type="radio"
+        name="payment"
+        value={PaymentMethod.KHALTI}
+        checked={paymentMethod === PaymentMethod.KHALTI}
+        onChange={handlePaymentMethod}
+        className="h-5 w-5 accent-purple-500"
+      />
+
+      <div className="flex-1">
+        <p className="font-semibold text-gray-900">
+          Khalti Payment
+        </p>
+
+        <p className="text-sm text-gray-500">
+          Secure online payment using Khalti
+        </p>
+      </div>
+
+      <div className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700">
+        Online
+      </div>
+    </label>
+
+    {/* eSewa */}
+    <label
+      className="flex cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 transition-all duration-300
+      hover:border-green-400
+      has-checked:border-green-500
+      has-checked:bg-green-50"
+    >
+      <input
+        type="radio"
+        name="payment"
+        value={PaymentMethod.ESEWA}
+        checked={paymentMethod === PaymentMethod.ESEWA}
+        onChange={handlePaymentMethod}
+        className="h-5 w-5 accent-green-500"
+      />
+
+      <div className="flex-1">
+        <p className="font-semibold text-gray-900">
+          eSewa Payment
+        </p>
+
+        <p className="text-sm text-gray-500">
+          Pay securely using your eSewa wallet
+        </p>
+      </div>
+
+      <div className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+        eSewa
+      </div>
+    </label>
+  </div>
+</div>
+      </div>
+
+      {/* RIGHT SIDE */}
+      <form
+        onSubmit={handleSubmit}
+        className="sticky top-24 h-fit overflow-hidden rounded-3xl border border-orange-100 bg-white shadow-xl"
+      >
+        {/* Top Banner */}
+       {/* Top Banner */}
+<div className="bg-linear-to-r from-green-500 via-emerald-500 to-lime-500 p-6 text-white">
+  <h2 className="text-2xl font-bold">
+    Payment Details
+  </h2>
+
+  <p className="mt-2 text-sm text-white/90">
+    Enter your delivery information
+  </p>
+</div>
+
+        <div className="p-6">
+          
+          {/* Inputs */}
+          <div className="space-y-5">
+
+            {/* Phone */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-gray-700">
+                Phone Number
+              </label>
+
+              <input
+                type="text"
+                onChange={handleChange}
+                name="phoneNumber"
+                value={data.phoneNumber}
+                placeholder="98XXXXXXXX"
+                required
+                className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4 text-sm outline-none transition-all duration-300 focus:border-orange-400 focus:bg-white focus:ring-4 focus:ring-orange-100"
+              />
+            </div>
+
+            {/* Address */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-gray-700">
+                Shipping Address
+              </label>
+
+              <input
+                type="text"
+                name="shippingAddress"
+                value={data.shippingAddress}
+                onChange={handleChange}
+                placeholder="Enter your full address"
+                required
+                className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4 text-sm outline-none transition-all duration-300 focus:border-green-400 focus:bg-white focus:ring-4 focus:ring-green-100"
+              />
+            </div>
+          </div>
+
+          {/* Summary */}
+          <div className="mt-8 rounded-2xl bg-linear-to-br from-orange-50 via-yellow-50 to-green-50 p-5">
+            
+            <h3 className="text-lg font-bold text-gray-900">
+              Order Summary
+            </h3>
+
+            <div className="mt-5 space-y-4 text-sm">
+              
+              <div className="flex justify-between">
+                <span className="text-gray-600">
+                  Subtotal
+                </span>
+
+                <span className="font-semibold">
+                  Rs.{" "}
+                  {subtotal}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-600">
+                  Shipping Fee
+                </span>
+
+                <span className="font-semibold text-orange-600">
+                  Rs. 200
+                </span>
+              </div>
+
+              <div className="border-t border-orange-200 pt-4">
+                <div className="flex justify-between">
+                  <span className="text-lg font-bold text-gray-900">
+                    Total
+                  </span>
+
+                  <span className="text-2xl font-bold text-green-600">
+                    Rs.{" "}
+                    {totalAmount}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Button */}
+         {/* COD */}
+{paymentMethod === PaymentMethod.COD && (
+  <button
+    type="submit"
+    className="mt-8 w-full rounded-2xl bg-linear-to-r from-blue-500 to-blue-600 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
+  >
+    Place Order
+  </button>
+)}
+
+{/* Khalti */}
+{paymentMethod === PaymentMethod.KHALTI && (
+  <button
+    type="submit"
+    className="mt-8 w-full rounded-2xl bg-linear-to-r from-purple-500 to-purple-600 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
+  >
+    Pay with Khalti
+  </button>
+)}
+
+{/* eSewa */}
+{paymentMethod === PaymentMethod.ESEWA && (
+  <button
+    type="submit"
+    className="mt-8 w-full rounded-2xl bg-linear-to-r from-green-500 to-emerald-600 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
+  >
+    Pay with eSewa
+  </button>
+)}
+        </div>
+      </form>
+    </div>
+  </div>
+);
+};
+
+export default CheckoutPage;

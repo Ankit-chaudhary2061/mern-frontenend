@@ -31,7 +31,10 @@ const AboutUs = () => {
             </h2>
 
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#326E3B] leading-tight">
-              Ramfok Green Tea
+              Ramfok Green 
+            </h2>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#326E3B] leading-tight">
+              Tea 
             </h2>
 
             <p className="text-gray-700 text-sm md:text-base leading-relaxed mt-6 max-w-xl mx-auto md:mx-0">

@@ -74,7 +74,7 @@ export function fetchSingleProduct(productId: string) {
     const state = getState();
 
     const existingProduct = state.product.product.find(
-      (product) => product.id === productId
+      (product) => product._id === productId
     );
 
     // If product already exists in redux store
