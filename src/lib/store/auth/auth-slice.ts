@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthState, User } from "./auth-slice-types";
 import { Status } from "../types/global-types";
 import { AppDispatch } from "../store";
-import { Logindata } from "@/app/(auth)/login/login-types";
+import { Logindata } from "@/app/login/login-types";
 import api from "../../http/api";
-import { RegisterData } from "@/app/(auth)/register/register-types";
+import { RegisterData } from "@/app/register/register-types";
 
 const initialState: AuthState = {
   user: null,

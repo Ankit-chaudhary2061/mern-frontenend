@@ -22,6 +22,7 @@ export enum OrderStatus {
   SHIPPED = "shipped",
   DELIVERED = "delivered",
   CANCELED = "canceled",
+  ALL = "all",
 }
 
 // ================= TRANSACTION STATUS =================

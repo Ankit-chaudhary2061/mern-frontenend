@@ -3,7 +3,7 @@ import Header from "@/src/components/header";
 import Image from "next/image";
 import Banner from "./home/banner";
 import AboutUs from "./home/aboutus";
-import Product from "./home/product";
+import Product from "./product/page";
 import ShowHideProduct from "./home/showhideproduct";
 import ProductFeature from "./home/products-banner";
 import StorySection from "./home/story-section";

@@ -3,10 +3,15 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Menu, X, ShoppingCart, LogOut } from 'lucide-react';
+import { Menu, X, ShoppingCart, LogOut, LogIn } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/src/lib/store/hook';
+import { logoutUser } from '@/src/lib/store/auth/auth-slice';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((store) => store.auth);
+  const { items } = useAppSelector((store) => store.cart);
 
   return (
     <nav className="bg-[#326E3B] sticky top-0 z-50">
@@ -47,15 +52,30 @@ const Header = () => {
 >
   <ShoppingCart size={22} />
 
-  <span className="absolute -top-2 -right-2 bg-white text-[#326E3B] text-xs px-1 rounded-full">
-    2
-  </span>
+  {items.length > 0 && (
+    <span className="absolute -top-2 -right-2 bg-white text-[#326E3B] text-xs px-1 rounded-full">
+      {items.length}
+    </span>
+  )}
 </Link>
 
-            <button className="flex items-center gap-2 hover:text-gray-200 transition">
-              <LogOut size={20} />
-              <span className="text-sm">Logout</span>
-            </button>
+            {user ? (
+              <button 
+                onClick={() => dispatch(logoutUser())}
+                className="flex items-center gap-2 hover:text-gray-200 transition"
+              >
+                <LogOut size={20} />
+                <span className="text-sm">Logout</span>
+              </button>
+            ) : (
+              <Link 
+                href="/login"
+                className="flex items-center gap-2 hover:text-gray-200 transition"
+              >
+                <LogIn size={20} />
+                <span className="text-sm">Login</span>
+              </Link>
+            )}
 
           </div>
 
@@ -88,9 +108,17 @@ const Header = () => {
             <li className="flex items-center gap-2 pt-2 border-t border-white/20">
               <ShoppingCart size={20} /> Cart
             </li>
-            <li className="flex items-center gap-2">
-              <LogOut size={20} /> Logout
-            </li>
+            {user ? (
+              <li className="flex items-center gap-2">
+                <LogOut size={20} /> 
+                <button onClick={() => dispatch(logoutUser())}>Logout</button>
+              </li>
+            ) : (
+              <li className="flex items-center gap-2">
+                <LogIn size={20} /> 
+                <Link href="/login" onClick={() => setIsOpen(false)}>Login</Link>
+              </li>
+            )}
           </ul>
         </div>
       )}
