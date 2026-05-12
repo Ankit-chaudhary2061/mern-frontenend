@@ -4,6 +4,7 @@ import productSllice from "./product/product-slice";
 import cartSlice from "./cart/cart-slice";
 import orderSlice from "./checkout/checkout-slice";
 import authSlice from "./auth/auth-slice";
+import gallerySlice from "./gallery/gallery-slice";
 
 
 const store = configureStore({
@@ -11,7 +12,8 @@ const store = configureStore({
     product:productSllice,
     cart:cartSlice,
     order:orderSlice,
-    auth:authSlice
+    auth:authSlice,
+    gallery:gallerySlice
 
   },
 });

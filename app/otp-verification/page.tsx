@@ -160,3 +160,5 @@ const OTPVerification = () => {
         </>
     )
 }
+
+export default OTPVerification;

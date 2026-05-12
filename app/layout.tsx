@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 import Providers from "@/src/service/provider";
 import Header from "@/src/components/header";
 import Footer from "@/src/components/footer";
@@ -30,9 +32,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <Header/>
+          <Header />
           {children}
-          <Footer/>
+          <Footer />
+          <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
         </Providers>
       </body>
     </html>

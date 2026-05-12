@@ -3,7 +3,8 @@
 import BorderAnimation from "@/src/components/bodyanimatior"
 import { useAppDispatch, useAppSelector } from "@/src/lib/store/hook"
 import { MessageCircleIcon } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
 import { RegisterData } from "./register-types"
 import { registerUser } from "@/src/lib/store/auth/auth-slice"
 import { Status } from "@/src/lib/store/types/global-types"
@@ -14,6 +15,7 @@ const Register = ()=>{
 
    const dispatch = useAppDispatch()
    const { registerStatus } = useAppSelector((state) => state.auth)
+   const [errorMessage, setErrorMessage] = useState("");
    const [data, setData] = useState<RegisterData>({
      username: "",
      email: "",
@@ -34,6 +36,26 @@ const Register = ()=>{
       e.preventDefault();
       dispatch(registerUser(data));
     };
+
+    useEffect(() => {
+      if (registerStatus === Status.ERROR) {
+        const message = "Registration failed. Email already exists. Please try again.";
+        setErrorMessage(message);
+        toast.error(message);
+
+        const timeout = window.setTimeout(() => {
+          setErrorMessage("");
+        }, 3000);
+
+        return () => window.clearTimeout(timeout);
+      }
+
+      if (registerStatus === Status.SUCCESS) {
+        toast.success("Registration successful. Please log in.");
+        setErrorMessage("");
+      }
+    }, [registerStatus]);
+
     return (
         <>
         <div className="w-full min-h-screen flex items-center justify-center p-4 bg-amber-50">
@@ -94,6 +116,12 @@ const Register = ()=>{
 >
   {registerStatus === Status.LOADING ? "Registering..." : "Register"}
 </button>
+
+                  {/* {errorMessage && (
+                    <p className="text-red-400 text-sm text-center">
+                      {errorMessage}
+                    </p>
+                  )} */}
 
                 </form>
                {/* Link to Login */}

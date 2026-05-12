@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Building } from 'lucide-react';
 import axios from 'axios';
-import Header from '@/src/components/header';
 
 const ContactSection = () => {
   const [form, setForm] = useState({
@@ -28,14 +27,11 @@ const ContactSection = () => {
     setIsSending(true);
 
     try {
-      await axios.post('/api/contact', form);
-
-      setForm({
-        firstName: '',
-        lastName: '',
-        email: '',
-        description: '',
-      });
+      await axios.post("http://localhost:8000/api/contact", {
+  name: form.firstName + " " + form.lastName,
+  email: form.email,
+  message: form.description,
+});
 
       setSuccessMessage('Message sent successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
@@ -130,7 +126,7 @@ const ContactSection = () => {
           <div className="col-span-1 md:col-start-8 md:col-span-5 flex flex-col gap-4">
 
            <div className="flex items-start gap-3 bg-[#326E3B] text-white rounded-xl p-4 shadow-sm">
-  <MapPin className="w-5 h-5 mt-1 flex-shrink-0" />
+  <MapPin className="w-5 h-5 mt-1 shrink-0" />
   
   <p className="text-sm leading-relaxed">
     Rampokh, Suryadaya Municipality-9 <br />
