@@ -17,8 +17,8 @@ const AboutUs = () => {
   }, []);
 
   return (
-    <section className="container mx-auto  bg-white">
-      <div className="py-[60px] md:py-[80px] lg:py-[100px]">
+    <section className=" mx-auto  bg-white">
+      <div className=" container py-[60px] md:py-[80px] lg:py-[100px]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 items-center w-full">
 
           {/* Text Section */}

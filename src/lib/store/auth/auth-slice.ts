@@ -97,11 +97,11 @@ try {
    console.error("Logout failed", error)
 }
   }}
-  export function verfyOtp(otp:string){
+  export function verfyOtp(otp:string, email:string){
     return async function verifyOtpThunk(dispatch:AppDispatch){
 try {
    dispatch(setOtpStatus(Status.LOADING))
-   await api.post("/verify-otp", { otp })
+   await api.post("/verify-otp", { otp, email })
    dispatch(setOtpStatus(Status.SUCCESS))
 } catch (error) {
    dispatch(setOtpStatus(Status.ERROR))
@@ -128,11 +128,11 @@ try {
 }
   } }
 
-export function resetPassword(password:string, token:string){
+export function resetPassword({ email, token, newPassword }: { email: string; token: string; newPassword: string }) {
   return async function resetPasswordThunk(dispatch:AppDispatch){
 try {
    dispatch(setResetPasswordStatus(Status.LOADING))
-   await api.post("/reset-password", { password, token })
+   await api.post("/reset-password", { email, token, newPassword })
    dispatch(setResetPasswordStatus(Status.SUCCESS))
 } catch (error) {
    dispatch(setResetPasswordStatus(Status.ERROR))
