@@ -1,7 +1,7 @@
 "use client"
 
 
-import { addToCart, fetchCartItems } from "@/src/lib/store/cart/cart-slice"
+import { addToCart, fetchCartItems, setItems } from "@/src/lib/store/cart/cart-slice"
 import { useAppDispatch, useAppSelector } from "@/src/lib/store/hook"
 import { fetchSingleProduct } from "@/src/lib/store/product/product-slice"
 import { Status } from "@/src/lib/store/types/global-types"
@@ -52,10 +52,10 @@ console.log(singleProduct,':single product')
       router.push('/login');
       return;
     }
-    if (id && singleProduct) {
-     await dispatch(addToCart(id))
-      dispatch(fetchCartItems())
-    }
+   if (id && singleProduct) {
+  await dispatch(addToCart(id));
+await dispatch(fetchCartItems()); 
+}
   }
     return(
         <>

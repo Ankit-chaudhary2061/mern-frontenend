@@ -4,7 +4,7 @@ import { Status } from "../types/global-types"
 
 
 export interface Product {
-  id: string
+  _id: string
 
   name: string
   description: string
@@ -30,10 +30,10 @@ export interface Product {
   createdBy: User
   category: Category
 }
-export interface CartItem{
-    Product:Product,
-    quantity : number,
-    productId:string
+export interface CartItem {
+  product: Product;   
+  quantity: number;
+  productId?: string;
 }
 
 export interface CartState{

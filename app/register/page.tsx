@@ -9,10 +9,11 @@ import { RegisterData } from "./register-types"
 import { registerUser } from "@/src/lib/store/auth/auth-slice"
 import { Status } from "@/src/lib/store/types/global-types"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 
 const Register = ()=>{
-
+  const router =  useRouter()
    const dispatch = useAppDispatch()
    const { registerStatus } = useAppSelector((state) => state.auth)
    const [errorMessage, setErrorMessage] = useState("");
@@ -53,8 +54,10 @@ const Register = ()=>{
       if (registerStatus === Status.SUCCESS) {
         toast.success("Registration successful. Please log in.");
         setErrorMessage("");
+         router.push(`/otp-verification?email=${data.email}`);
+
       }
-    }, [registerStatus]);
+    }, [registerStatus, data.email, router]);
 
     return (
         <>

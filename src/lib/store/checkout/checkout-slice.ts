@@ -127,7 +127,7 @@ export function fetchMyOrders() {
   return async function fetchMyOrdersThunk(dispatch: AppDispatch) {
     try {
       dispatch(setStatus(Status.LOADING));
-      const response = await api.get("orders/myorders");
+      const response = await api.get("orders/my");
           if (response.status === 200) {
         dispatch(setMyOrders(response.data.orders));
 
@@ -147,7 +147,7 @@ export function fetchMyOrderDetails(orderId: string) {
             dispatch(setStatus(Status.LOADING));
             const response = await api.get(`orders/details/${orderId}`);
             if (response.status === 200) {
-                dispatch(setOrderDetails(response.data.orderDetails));
+              dispatch(setOrderDetails(response.data.data));
                 dispatch(setStatus(Status.SUCCESS));
             } else {
                 dispatch(setStatus(Status.ERROR));

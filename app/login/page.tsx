@@ -53,35 +53,38 @@ export const Login = () => {
     }
 
     setIsForgotPassword(true);
-
     dispatch(forgotPassword(data.email));
-    useEffect(() => {
-  // Forgot password success
-  if (forgotPasswordStatus === Status.SUCCESS && isForgotPassword) {
-    toast.success("Reset link sent to your email. Check your inbox!");
-    // Do NOT redirect to /reset-password; user must click the email link
-    return;
-  }
+  };
 
-  // Login success
-  if (loginStatus === Status.SUCCESS && user?.email) {
+useEffect(() => {
+  // LOGIN SUCCESS
+ if (loginStatus === Status.SUCCESS) {
     toast.success("Login successful!");
-    router.push("/feed");
-    return;
+
+    const timer = setTimeout(() => {
+      router.push("/");
+    }, 500);
+
+    return () => clearTimeout(timer);
   }
 
-  // Login error
   if (loginStatus === Status.ERROR) {
     toast.error("Login failed. Check your credentials.");
   }
 
-  // Forgot password error
-  if (forgotPasswordStatus === Status.ERROR && isForgotPassword) {
-    toast.error("Failed to send reset link.");
+  // FORGOT PASSWORD SUCCESS
+  if (forgotPasswordStatus === Status.SUCCESS && isForgotPassword) {
+    toast.success("Reset link sent to your email!");
+    setIsForgotPassword(false);
+    return;
   }
 
-}, [loginStatus, forgotPasswordStatus,  user, router, isForgotPassword]);
-  };
+  // FORGOT PASSWORD ERROR
+  if (forgotPasswordStatus === Status.ERROR && isForgotPassword) {
+    toast.error("Failed to send reset link.");
+    setIsForgotPassword(false);
+  }
+}, [loginStatus, forgotPasswordStatus, user, router]);
 
   return (
     <>

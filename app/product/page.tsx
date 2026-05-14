@@ -32,25 +32,24 @@ console.log(product,':product')
 
   const visibleProducts = showAll ? product : product.slice(0, 3);
 
-  const handleAddToCart = async (productId: string) => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-    await dispatch(addToCart(productId));
-    dispatch(fetchCartItems());
-  };
+const handleAddToCart = async (productId: string) => {
+  if (!user) {
+    router.push('/login');
+    return;
+  }
 
-  const handleShopNow = async (productId: string) => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-    await dispatch(addToCart(productId));
-    dispatch(fetchCartItems());
-    // Navigate to checkout
-    window.location.href = '/checkout';
-  };
+  await dispatch(addToCart(productId));
+};
+const handleShopNow = async (productId: string) => {
+  if (!user) {
+    router.push('/login');
+    return;
+  }
+
+  await dispatch(addToCart(productId));
+
+  router.push('/checkout');
+};;
 
   return (
     <div className='bg-[rgb(247,244,244)] w-full'>

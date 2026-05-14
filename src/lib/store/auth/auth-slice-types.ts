@@ -24,6 +24,7 @@ export interface AuthState {
 
   forgotPasswordStatus: Status;
   resetPasswordStatus: Status;
+  logoutStatus: Status;
 
  
 }

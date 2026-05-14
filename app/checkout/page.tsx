@@ -1,89 +1,162 @@
-"use client"
+"use client";
+
+import { fetchCartItems } from "@/src/lib/store/cart/cart-slice";
 import { orderItem } from "@/src/lib/store/checkout/checkout-slice";
-import { ItemDetails, OrderData, PaymentMethod } from "@/src/lib/store/checkout/checkout-slice-types";
+import {
+  ItemDetails,
+  OrderData,
+  PaymentMethod,
+} from "@/src/lib/store/checkout/checkout-slice-types";
 import { useAppDispatch, useAppSelector } from "@/src/lib/store/hook";
 import { Status } from "@/src/lib/store/types/global-types";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-
-
-
+import {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useState,
+} from "react";
+import { toast } from "react-toastify";
 
 const CheckoutPage = () => {
-    const router = useRouter()
-    const dispatch = useAppDispatch()
-    const {items}=useAppSelector((store)=>store.cart)
-    const {khaltiUrl,status}=useAppSelector((store)=>store.order)
+  const router = useRouter();
+  const dispatch = useAppDispatch();
 
-    const subtotal = items.reduce(
-      (total, item) => total + item.quantity * Number(item.Product?.price || 0),
-      0
-    )
+  // ✅ CART
+  const { items = [], status: cartStatus } = useAppSelector(
+    (store) => store.cart
+  );
 
-    const shippingFee = 200
-    const totalAmount = subtotal + shippingFee
+  // ✅ ORDER (FIXED alias conflict)
+  const {
+    khaltiUrl,
+    status: orderStatus,
+  } = useAppSelector((store) => store.order);
 
-    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.COD)
-    const [data, setData] = useState<OrderData>({
-      shippingAddress: '',
-      phoneNumber: '',
-      totalAmount: 0,
-      paymentDetails: {
-        paymentMethod: PaymentMethod.COD,
-      },
-      items: [],
-    })
+  // 🔥 Load cart on page load
+  useEffect(() => {
+    dispatch(fetchCartItems());
+  }, [dispatch]);
 
-const handlePaymentMethod = (e: ChangeEvent<HTMLInputElement>) => {
-  const value = e.target.value as PaymentMethod;
+  // 💰 calculations
+  const subtotal = items.reduce(
+    (total, item) =>
+      total +
+      item.quantity * Number(item.product?.price || 0),
+    0
+  );
 
-  setPaymentMethod(value);
+  const shippingFee = 200;
+  const totalAmount = subtotal + shippingFee;
 
-  setData((prev) => ({
-    ...prev,
+  // 💳 payment state
+  const [paymentMethod, setPaymentMethod] =
+    useState<PaymentMethod>(PaymentMethod.COD);
+
+  const [data, setData] = useState<OrderData>({
+    shippingAddress: "",
+    phoneNumber: "",
+    totalAmount: 0,
     paymentDetails: {
-      paymentMethod: value,
+      paymentMethod: PaymentMethod.COD,
     },
-  }));
-};
+    items: [],
+  });
 
-const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-  const { name, value } = e.target
-  setData((prev) => ({
-    ...prev,
-    [name]: value,
-  }))
-}
-const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
+  // 🔄 sync total amount
+  useEffect(() => {
+    setData((prev) => ({
+      ...prev,
+      totalAmount,
+    }));
+  }, [totalAmount]);
 
-  if (!items.length) {
-    return
+  // 💳 payment change
+  const handlePaymentMethod = (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value as PaymentMethod;
+
+    setPaymentMethod(value);
+
+    setData((prev) => ({
+      ...prev,
+      paymentDetails: {
+        paymentMethod: value,
+      },
+    }));
+  };
+
+  // ✏️ form change
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+
+  const handleSubmit = async (
+    e: FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    if (!items.length) return;
+
+    const itemDetails: ItemDetails[] = items.map(
+      (item) => ({
+        productId:
+          item.productId || item.product._id,
+        quantity: item.quantity,
+      })
+    );
+
+    const orderData: OrderData = {
+      ...data,
+      items: itemDetails,
+      totalAmount,
+    };
+
+    await dispatch(orderItem(orderData));
+  };
+
+  // 🔥 redirect after order success
+  useEffect(() => {
+    if (
+      orderStatus === Status.SUCCESS &&
+      paymentMethod === PaymentMethod.COD
+    ) {
+      toast.success("Order placed successfully!");
+      router.push("/");
+    }
+
+    if (
+      orderStatus === Status.SUCCESS &&
+      paymentMethod !== PaymentMethod.COD &&
+      khaltiUrl
+    ) {
+      toast.success("Redirecting to payment gateway...");
+      window.location.href = khaltiUrl;
+    }
+  }, [
+    orderStatus,
+    khaltiUrl,
+    paymentMethod,
+    router,
+  ]);
+
+  // ⏳ loading state
+  if (cartStatus === Status.LOADING) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading cart...
+      </div>
+    );
   }
-
-  const itemDetails: ItemDetails[] = items.map((item) => ({
-    productId: item.productId,
-    quantity: item.quantity,
-  }))
-
-  const orderData: OrderData = {
-    ...data,
-    items: itemDetails,
-    totalAmount,
-  }
-
-  await dispatch(orderItem(orderData))
-}
-
-useEffect(() => {
-  if (status === Status.SUCCESS && paymentMethod === PaymentMethod.COD) {
-    alert("Order placed successfully 🎉");
-    router.push("/");
-  } else if (status === Status.SUCCESS && paymentMethod !== PaymentMethod.COD && khaltiUrl) {
-    window.location.href = khaltiUrl;
-  }
-}, [status, khaltiUrl, paymentMethod, router]);
-
 
 return (
   <div className="min-h-screen bg-linear-to-br from-orange-50 via-yellow-50 to-green-50">
@@ -122,7 +195,7 @@ return (
           {items.length > 0 &&
             items.map((item) => (
               <div
-                key={item.Product.id}
+               key={`${item.product?._id}-${item.quantity}-${item.productId}`}
                 className="group relative overflow-hidden rounded-3xl border border-orange-100 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
                 {/* Top Glow */}
@@ -133,8 +206,8 @@ return (
                   {/* Image */}
                   <div className="relative">
                     <img
-                      src={item.Product.image?.[0]?.path}
-                      alt={item.Product.name}
+                      src={item.product?.image?.[0]?.path}
+                      alt={item.product?.name}
                       className="h-32 w-32 rounded-2xl object-cover border border-orange-100"
                     />
 
@@ -148,11 +221,11 @@ return (
                   <div className="flex flex-1 flex-col justify-between">
                     <div>
                       <h3 className="text-lg font-bold text-gray-900">
-                        {item.Product.name}
+                        {item.product?.name}
                       </h3>
 
                       <span className="mt-2 inline-block rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
-                        {item.Product.category.categoryName}
+                        {item.product?.category?.categoryName}
                       </span>
                     </div>
 
@@ -164,12 +237,12 @@ return (
 
                         <p className="text-2xl font-bold text-green-600">
                           Rs.{" "}
-                          {item.Product.price * item.quantity}
+                          {item.product?.price * item.quantity}
                         </p>
                       </div>
 
                       <div className="rounded-xl bg-orange-50 px-3 py-2 text-sm font-medium text-orange-700">
-                        Rs. {item.Product.price} each
+                        Rs. {item.product?.price} each
                       </div>
                     </div>
                   </div>

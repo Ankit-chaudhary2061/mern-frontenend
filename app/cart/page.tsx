@@ -4,62 +4,70 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/src/lib/store/hook";
-import { deleteCartItem, fetchCartItems, updateCartItem, updateCartItemThunk } from "@/src/lib/store/cart/cart-slice";
-import Header from "@/src/components/header";
-import Footer from "@/src/components/footer";
+import { deleteCartItem, fetchCartItems, updateCartItem} from "@/src/lib/store/cart/cart-slice";
+
 
 const CartPage = ()=>{
   
-  const dispatch= useAppDispatch()
-  const {items,status} = useAppSelector((store)=>store.cart)
+const dispatch = useAppDispatch();
+const { items, status } = useAppSelector((store) => store.cart);
   console.log(items,':cartitems')
 
 useEffect(() => {
   dispatch(fetchCartItems());
 }, [dispatch]);
 
-const handleDelete = async (productId: string) => {
-  await dispatch(deleteCartItem(productId))
-  console.log("DELETE clicked, productId =", productId);;
+const totalItemInCarts = items.reduce(
+  (total, item) => total + (item.quantity || 0),
+  0
+);
+
+const totalPriceInCarts = items.reduce((total, item) => {
+  const price = item.product?.price || 0;
+  return total + price * (item.quantity || 0);
+}, 0);
+    // Loading State
+const handleDelete =  async(productId: string) => {
+  await dispatch(deleteCartItem(productId));
+   console.log("DELETE clicked, productId =", productId);;
   dispatch(fetchCartItems());
-};
+}
 
 const handleUpdate = async (productId: string, quantity: number) => {
-  await dispatch(updateCartItemThunk(productId, quantity));
+  await dispatch(updateCartItem(productId, quantity));
   dispatch(fetchCartItems());
 };
-    
-const totalItemInCarts =items.reduce((total,item)=>total + item.quantity,0)
- const totalPriceInCarts = items.reduce(
-    (total, item) => total + item.quantity * Number(item.Product?.price || 0),
-    0
-  );
-    // Loading State
-
-
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <p className="text-lg font-medium">Loading cart...</p>
-      </div>
+      <>
+     
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+          <p className="text-lg font-medium">Loading cart...</p>
+        </div>
+      
+      </>
     );
   }
 
   // Empty Cart State
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
-          <p className="text-gray-600">Add some products to get started!</p>
+      <>
+
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
+            <p className="text-gray-600">Add some products to get started!</p>
+          </div>
         </div>
-      </div>
+     
+      </>
     );
   }
     return(
         <>
-        <Header/>
+      
   <div className="min-h-screen bg-[#f7fff4] py-12 px-4">
   <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
     
@@ -77,103 +85,99 @@ const totalItemInCarts =items.reduce((total,item)=>total + item.quantity,0)
       </div>
 
       <div className="space-y-6">
-        {items.map((item) => (
-          <div
-            key={item.Product.id}
-            className="border border-[#dff3d7] rounded-2xl p-5 hover:shadow-md transition-all duration-300 bg-[#fcfffb]"
-          >
-            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-              
-              {/* Image */}
-              <div className="w-full md:w-[140px] h-[140px] relative overflow-hidden rounded-2xl bg-[#f4fff1] border border-[#dff3d7]">
-               <Image
-  src={
-    item.Product?.coverImage?.path
-      ? `http://localhost:5000/${item.Product.coverImage.path}`
-      : "/placeholder.png"
-  }
-  alt={item.Product?.name || "product"}
-  width={120}
-  height={120}
-  className="rounded-xl object-cover"
-/>
-              </div>
+      {items.map((item, index) => {
+  const product = item.product; // ✅ FIXED (NOT Product)
 
-              {/* Content */}
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-[#2d6a4f] mb-2">
-                  {item.Product?.name}
-                </h3>
+  if (!product) return null;
+const productId = item.productId || product?._id || "";
 
-                <p className="text-gray-600 leading-7 text-sm">
-                  {item.Product?.description}
-                </p>
+  const imageSrc = product?.coverImage?.path
+    ? product.coverImage.path.startsWith("http")
+      ? product.coverImage.path
+      : `http://localhost:5000/${product.coverImage.path}`
+    : "/placeholder.png";
 
-                <div className="mt-4 flex items-center gap-3">
-                  <span className="text-[#f59e0b] text-2xl font-bold">
-                    ₹{item.Product?.price}
-                  </span>
-                </div>
-              </div>
+  const price = product?.price || 0;
 
-              {/* Quantity + Remove */}
-              <div className="flex flex-col gap-4 items-start md:items-end">
+          return (
+            <div
+              key={item.productId || `${product?.name || 'item'}-${item.quantity}-${price}-${index}`}
+              className="border border-[#dff3d7] rounded-2xl p-5 hover:shadow-md transition-all duration-300 bg-[#fcfffb]"
+            >
+              <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
                 
-                {/* Quantity */}
-                <div className="flex items-center bg-[#f3fff0] border border-[#ccebc5] rounded-xl overflow-hidden">
-                  
-                  <button
-                    onClick={() =>
-                      handleUpdate(
-                        item.Product.id,
-                        item.quantity - 1
-                      )
-                    }
-                    disabled={item.quantity <= 1}
-                    className="w-10 h-10 text-lg font-bold text-[#2d6a4f] hover:bg-[#dff3d7] disabled:opacity-40"
-                  >
-                    -
-                  </button>
-
-                  <span className="w-12 text-center font-semibold text-[#2d6a4f]">
-                    {item.quantity}
-                  </span>
-
-                  <button
-                    onClick={() =>
-                      handleUpdate(
-                        item.Product.id,
-                        item.quantity + 1
-                      )
-                    }
-                    className="w-10 h-10 text-lg font-bold text-[#2d6a4f] hover:bg-[#dff3d7]"
-                  >
-                    +
-                  </button>
+                {/* Image */}
+                <div className="w-full md:w-[140px] h-[140px] relative overflow-hidden rounded-2xl bg-[#f4fff1] border border-[#dff3d7]">
+                  <Image
+                    src={imageSrc}
+                    alt={product?.name || "product"}
+                    width={120}
+                    height={120}
+                    className="rounded-xl object-cover"
+                  />
                 </div>
 
-                {/* Total */}
-                <p className="text-xl font-bold text-[#2d6a4f]">
-                  ₹
-                  {(
-                    Number(item.Product?.price || 0) *
-                    item.quantity
-                  ).toLocaleString()}
-                </p>
+                {/* Content */}
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-[#2d6a4f] mb-2">
+                    {product?.name}
+                  </h3>
 
-                {/* Remove */}
-                <button
-                  onClick={() =>
-                    handleDelete(item.Product.id)
-                  }
-                  className="bg-[#fff4e5] hover:bg-[#ffe7bf] text-[#f59e0b] px-5 py-2 rounded-xl font-semibold transition-all"
-                >
-                  Remove
-                </button>
+                  <p className="text-gray-600 leading-7 text-sm">
+                    {product?.description}
+                  </p>
+
+                  <div className="mt-4 flex items-center gap-3">
+                    <span className="text-[#f59e0b] text-2xl font-bold">
+                      ₹{product?.price}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quantity + Remove */}
+                <div className="flex flex-col gap-4 items-start md:items-end">
+                  
+                  {/* Quantity */}
+                  <div className="flex items-center bg-[#f3fff0] border border-[#ccebc5] rounded-xl overflow-hidden">
+                    
+                    <button
+                      onClick={() => handleUpdate(productId, item.quantity - 1)}
+                      disabled={item.quantity <= 1}
+                      className="w-10 h-10 text-lg font-bold text-[#2d6a4f] hover:bg-[#dff3d7] disabled:opacity-40"
+                    >
+                      -
+                    </button>
+
+                    <span className="w-12 text-center font-semibold text-[#2d6a4f]">
+                      {item.quantity}
+                    </span>
+
+                    <button
+                      onClick={() => handleUpdate(productId, item.quantity + 1)}
+                      disabled={item.quantity >= (product?.stock || 0)}
+                      className="w-10 h-10 text-lg font-bold text-[#2d6a4f] hover:bg-[#dff3d7] disabled:opacity-40"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  {/* Total */}
+                  <p className="text-xl font-bold text-[#2d6a4f]">
+                    ₹{(price * item.quantity).toLocaleString()}
+                  </p>
+
+                  {/* Remove */}
+                  <button
+                    onClick={() => handleDelete(productId)}
+                    className="bg-[#fff4e5] hover:bg-[#ffe7bf] text-[#f59e0b] px-5 py-2 rounded-xl font-semibold transition-all disabled:opacity-40"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
 
@@ -231,7 +235,7 @@ const totalItemInCarts =items.reduce((total,item)=>total + item.quantity,0)
     </div>
   </div>
 </div>
-<Footer/>
+
         
         
         </>

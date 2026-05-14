@@ -15,6 +15,7 @@ const initialState: AuthState = {
 
   forgotPasswordStatus: Status.IDLE,
   resetPasswordStatus: Status.IDLE,
+  logoutStatus: Status.IDLE
 
   
 }
@@ -41,6 +42,9 @@ state.user = action.payload
        setResetPasswordStatus(state:AuthState, action:PayloadAction<Status>){
         state.resetPasswordStatus = action.payload
        },
+       setlogoutStatus(state:AuthState, action:PayloadAction<Status>){
+        state.logoutStatus = action.payload
+       },
         clearUser(state: AuthState) {
     state.user = null
   },
@@ -59,24 +63,30 @@ export const { setUser,
   setToken,
   setOtpStatus,
   setForgotPasswordStatus,
-  setResetPasswordStatus,clearUser} =authSlice.actions
+  setResetPasswordStatus,
+  setlogoutStatus,
+  clearUser} =authSlice.actions
 export default authSlice.reducer
 
 
-export function loginUser(data:Logindata){
-  return async function loginUserThunk(dispatch:AppDispatch){
-try {
-   dispatch(setLoginStatus(Status.LOADING))
-   const response = await  api.post("/login", data)
-   const user:User = response.data.user
-   const token:string = response.data.token
-   dispatch(setUser(user))
-   dispatch(setToken(token))
-   dispatch(setLoginStatus(Status.SUCCESS))
-} catch (error) {
-   dispatch(setLoginStatus(Status.ERROR))
-}
-  }
+export function loginUser(data: Logindata) {
+  return async function loginUserThunk(dispatch: AppDispatch) {
+    try {
+      dispatch(setLoginStatus(Status.LOADING));
+
+      const response = await api.post("/login", data);
+
+      const user: User = response.data.data; // IMPORTANT FIX
+      const token: string = response.data.data.token;
+
+      dispatch(setUser(user));
+      dispatch(setToken(token));
+
+      dispatch(setLoginStatus(Status.SUCCESS));
+    } catch (error) {
+      dispatch(setLoginStatus(Status.ERROR));
+    }
+  };
 }
 
 export function registerUser(data:RegisterData){
@@ -93,8 +103,10 @@ export function logoutUser(){
 try {
    await api.post("/logout")
    dispatch(clearUser())
+    dispatch(setlogoutStatus(Status.SUCCESS))
 } catch (error) {
    console.error("Logout failed", error)
+    dispatch(setlogoutStatus(Status.ERROR))
 }
   }}
   export function verfyOtp(otp:string, email:string){
@@ -138,4 +150,13 @@ try {
    dispatch(setResetPasswordStatus(Status.ERROR))
 }
   } }
-  
+export function fetchMe() {
+  return async (dispatch: AppDispatch) => {
+    try {
+      const res = await api.get("/me");
+      dispatch(setUser(res.data.data));
+    } catch (err) {
+      dispatch(clearUser());
+    }
+  };
+}

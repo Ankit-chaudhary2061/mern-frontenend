@@ -4,8 +4,7 @@ import { fetchMyOrders } from "@/src/lib/store/checkout/checkout-slice";
 import { OrderStatus } from "@/src/lib/store/checkout/checkout-slice-types";
 import { useAppDispatch, useAppSelector } from "@/src/lib/store/hook";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-
+import Link from "next/link";
 const OrderPage = () => {
   const dispatch = useAppDispatch();
 
@@ -183,7 +182,7 @@ const OrderPage = () => {
                       >
                         {/* ORDER ID */}
                         <td className="px-6 py-5 border-b border-orange-100">
-                          <Link to={`/my-order/${orders._id}`}>
+                          <Link href={`/my-order/${orders._id}`}>
                             <p className="font-semibold text-green-700 hover:text-orange-600 underline duration-300">
                               #{orders._id.slice(0, 12)}
                             </p>

@@ -9,44 +9,71 @@ const initialState: CartState = {
   status: Status.IDLE,
 };
 
+interface DeleteAction {
+  productId: string;
+}
+
+interface UpdateAction {
+  productId: string;
+  quantity: number;
+}
+
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    setItems(state: CartState, action: PayloadAction<CartItem[]>) {
+    setItems(state, action: PayloadAction<CartItem[]>) {
       state.items = action.payload;
     },
-    setStatus(state: CartState, action: PayloadAction<Status>) {
+
+    setStatus(state, action: PayloadAction<Status>) {
       state.status = action.payload;
     },
-    setDeleteItem(state: CartState, action: PayloadAction<string>) {
-      state.items = state.items.filter(item => item.productId !== action.payload);
+
+    // ✅ FIXED DELETE
+    setDeleteItem(state, action: PayloadAction<DeleteAction>) {
+      state.items = state.items.filter(
+        (item) => item.productId !== action.payload.productId
+      );
     },
-    clearCart(state: CartState) {
+
+    clearCart(state) {
       state.items = [];
     },
-    updateCartItem(state: CartState, action: PayloadAction<{ productId: string, quantity: number }>) {
-      const { productId, quantity } = action.payload;
-      const itemIndex = state.items.findIndex(item => item.productId === productId);
-      if (itemIndex !== -1) {
-        state.items[itemIndex].quantity = quantity;
+
+
+    setUpdateItem(state, action: PayloadAction<UpdateAction>) {
+      const index = state.items.findIndex(
+        (item) => item.productId === action.payload.productId
+      );
+
+      if (index !== -1) {
+        state.items[index].quantity = action.payload.quantity;
       }
-    }
-  }
+    },
+  },
 });
 
 export default cartSlice.reducer;
-export const { setItems, setStatus, setDeleteItem, clearCart, updateCartItem } = cartSlice.actions;
+
+export const {
+  setItems,
+  setStatus,
+  setDeleteItem,
+  clearCart,
+  setUpdateItem,
+} = cartSlice.actions;
 
 export function addToCart(productId: string) {
   return async function addToCartThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await api.post("/cart", { productId, quantity: 1 });
+    const response = await api.post("/cart", { productId, quantity: 1 });
       if (response.status === 200) {
-        const { data } = response.data;
-        dispatch(setItems(data));
-        dispatch(setStatus(Status.SUCCESS));
+      const cart = response.data.data;
+
+dispatch(setItems(cart.items || []));
+dispatch(setStatus(Status.SUCCESS));
       } else {
         dispatch(setStatus(Status.ERROR));
       }
@@ -62,9 +89,9 @@ export function fetchCartItems() {
     try {
       const response = await api.get("/cart");
       if (response.status === 200) {
-        const { data } = response.data;
-        dispatch(setItems(data));
-        dispatch(setStatus(Status.SUCCESS));
+        const cart = response.data.data;
+       dispatch(setItems(cart.items || []));
+dispatch(setStatus(Status.SUCCESS));
       } else {
         dispatch(setStatus(Status.ERROR));
       }
@@ -80,7 +107,7 @@ export function deleteCartItem(productId: string) {
     try {
       const response = await api.delete(`/cart/${productId}`);
       if (response.status === 200) {
-        dispatch(setDeleteItem(productId));
+        dispatch(setDeleteItem({ productId }));
         dispatch(setStatus(Status.SUCCESS));
       } else {
         dispatch(setStatus(Status.ERROR));
@@ -92,15 +119,16 @@ export function deleteCartItem(productId: string) {
   };
 }
 
-export function updateCartItemThunk(productId: string, quantity: number) {
+export function updateCartItem(productId: string, quantity: number) {
   return async function updateCartItemAsyncThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
     try {
-      const response = await api.put(`/cart/${productId}`, { quantity });
+    const response = await api.patch(`/cart/${productId}`, { quantity });;
       if (response.status === 200) {
-        const { data } = response.data;
-        dispatch(setItems(data));
-        dispatch(setStatus(Status.SUCCESS));
+        const cart = response.data.data;
+
+dispatch(setItems(cart.items || []));
+dispatch(setStatus(Status.SUCCESS));
       } else {
         dispatch(setStatus(Status.ERROR));
       }
