@@ -123,11 +123,11 @@ export function orderItem(data:OrderData){
             dispatch(setStatus(Status.ERROR));
          }
 }}
-export function fetchMyOrders() {
+export function fetchMyOrders(page: number) {
   return async function fetchMyOrdersThunk(dispatch: AppDispatch) {
     try {
       dispatch(setStatus(Status.LOADING));
-      const response = await api.get("orders/my");
+      const response = await api.get(`orders/my?page=${page}`);
           if (response.status === 200) {
         dispatch(setMyOrders(response.data.orders));
 
@@ -175,22 +175,35 @@ export function verifyKhaltiTransaction(pidx: string) {
     }
   }
 }
-export function updateOrderStatusAsync(orderId: string, status: OrderStatus) {
-  return async function updateOrderStatusThunk(dispatch: AppDispatch)  {
-    try {        dispatch(setStatus(Status.LOADING));    
-        const response = await api.post(`/orders/${orderId}/update-status`, { status });    
-        if (response.status === 200) {
-            dispatch(updateOrderStatus({ orderId, status }));
-            dispatch(setStatus(Status.SUCCESS));
-        } else {
-            dispatch(setStatus(Status.ERROR));
+export const updateOrderStatusAsync =
+  (orderId: string, orderStatus: OrderStatus) =>
+  async (dispatch: AppDispatch) => {
+    try {
+      dispatch(setStatus(Status.LOADING));
+
+      const response = await api.patch(
+        `/orders/status/${orderId}`,
+        {
+          orderStatus,
         }
+      );
+
+      dispatch(
+        updateOrderStatus({
+          orderId,
+          status: orderStatus,
+        })
+      );
+
+      dispatch(setStatus(Status.SUCCESS));
+
+      return response.data;
     } catch (error) {
-        console.log(error);
-        dispatch(setStatus(Status.ERROR));
+      console.log("UPDATE ORDER ERROR:", error);
+      dispatch(setStatus(Status.ERROR));
+      throw error;
     }
-    }
-}
+  };
 
 // export function cancelOrder(orderId: string) {
 //   return async function cancelOrderThunk(dispatch: AppDispatch) {
@@ -198,7 +211,7 @@ export function updateOrderStatusAsync(orderId: string, status: OrderStatus) {
 //         dispatch(setStatus(Status.LOADING));    
 //         const response = await api.post(`/orders/${orderId}/cancel`);   
 //         if (response.status === 200) {
-//             dispatch(updateOrderStatus({ orderId, status: OrderStatus.CANCELED }));
+//             dispatch(updateOrderStatus({ orderId, orderStatus: OrderStatus.CANCELED }));
 //             dispatch(setStatus(Status.SUCCESS));
 //         } else {
 //             dispatch(setStatus(Status.ERROR));

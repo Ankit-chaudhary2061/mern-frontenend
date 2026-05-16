@@ -1,145 +1,182 @@
 "use client";
 
-import { fetchCartItems } from "@/src/lib/store/cart/cart-slice";
+import { fetchCartItems, clearCart } from "@/src/lib/store/cart/cart-slice";
 import { orderItem } from "@/src/lib/store/checkout/checkout-slice";
+
 import {
   ItemDetails,
   OrderData,
   PaymentMethod,
 } from "@/src/lib/store/checkout/checkout-slice-types";
+
 import { useAppDispatch, useAppSelector } from "@/src/lib/store/hook";
+
 import { Status } from "@/src/lib/store/types/global-types";
+
 import { useRouter } from "next/navigation";
+
 import {
   ChangeEvent,
   FormEvent,
   useEffect,
   useState,
 } from "react";
+
 import { toast } from "react-toastify";
 
 const CheckoutPage = () => {
   const router = useRouter();
+
   const dispatch = useAppDispatch();
 
-  // ✅ CART
-  const { items = [], status: cartStatus } = useAppSelector(
-    (store) => store.cart
-  );
 
-  // ✅ ORDER (FIXED alias conflict)
+  const { items = [], status: cartStatus } =
+    useAppSelector((store) => store.cart);
+
+
   const {
     khaltiUrl,
     status: orderStatus,
   } = useAppSelector((store) => store.order);
 
-  // 🔥 Load cart on page load
   useEffect(() => {
     dispatch(fetchCartItems());
   }, [dispatch]);
 
-  // 💰 calculations
+
   const subtotal = items.reduce(
     (total, item) =>
       total +
-      item.quantity * Number(item.product?.price || 0),
+      item.quantity *
+        Number(item.product?.price || 0),
     0
   );
 
   const shippingFee = 200;
+
   const totalAmount = subtotal + shippingFee;
 
-  // 💳 payment state
+  // ✅ PAYMENT METHOD
   const [paymentMethod, setPaymentMethod] =
-    useState<PaymentMethod>(PaymentMethod.COD);
+    useState<PaymentMethod | "">("");
 
+  // ✅ FORM DATA
   const [data, setData] = useState<OrderData>({
     shippingAddress: "",
     phoneNumber: "",
     totalAmount: 0,
+
     paymentDetails: {
       paymentMethod: PaymentMethod.COD,
     },
+
     items: [],
   });
 
-  // 🔄 sync total amount
-  useEffect(() => {
-    setData((prev) => ({
-      ...prev,
-      totalAmount,
-    }));
-  }, [totalAmount]);
+  // ✅ TRACK IF ORDER WAS SUBMITTED
+  const [orderSubmitted, setOrderSubmitted] =
+    useState(false);
 
-  // 💳 payment change
+
   const handlePaymentMethod = (
     e: ChangeEvent<HTMLInputElement>
   ) => {
-    const value = e.target.value as PaymentMethod;
+    const value =
+      e.target.value as PaymentMethod;
 
     setPaymentMethod(value);
 
     setData((prev) => ({
       ...prev,
+
       paymentDetails: {
         paymentMethod: value,
       },
     }));
   };
 
-  // ✏️ form change
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = e.target;
+  
+const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
 
-    setData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  setData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  if (!paymentMethod) {
+    toast.error("Please select payment method");
+    return;
+  }
+
+  if (!data.phoneNumber || !data.phoneNumber.trim()) {
+    toast.error("Phone number is required");
+    return;
+  }
+
+  if (!data.shippingAddress || !data.shippingAddress.trim()) {
+    toast.error("Shipping address is required");
+    return;
+  }
+
+  if (!items.length) {
+    toast.error("Cart is empty");
+    return;
+  }
+
+  const itemDetails: ItemDetails[] = items.map((item) => ({
+    productId: item.productId || item.product?._id || "",
+    quantity: item.quantity,
+  }));
+
+  const orderData: OrderData = {
+    ...data,
+    items: itemDetails,
+    totalAmount,
+    paymentDetails: {
+      paymentMethod,
+    },
   };
 
+  setOrderSubmitted(true);
+  await dispatch(orderItem(orderData));
+};
 
-  const handleSubmit = async (
-    e: FormEvent<HTMLFormElement>
-  ) => {
-    e.preventDefault();
-
-    if (!items.length) return;
-
-    const itemDetails: ItemDetails[] = items.map(
-      (item) => ({
-        productId:
-          item.productId || item.product._id,
-        quantity: item.quantity,
-      })
-    );
-
-    const orderData: OrderData = {
-      ...data,
-      items: itemDetails,
-      totalAmount,
-    };
-
-    await dispatch(orderItem(orderData));
-  };
-
-  // 🔥 redirect after order success
+  // ✅ SUCCESS / REDIRECT
   useEffect(() => {
+    if (!orderSubmitted) return;
+
     if (
       orderStatus === Status.SUCCESS &&
       paymentMethod === PaymentMethod.COD
     ) {
-      toast.success("Order placed successfully!");
-      router.push("/");
+      toast.success(
+        "Order placed successfully!"
+      );
+
+      dispatch(clearCart());
+      setOrderSubmitted(false);
+      setTimeout(() => {
+        router.push("/my-order");
+      }, 1500);
     }
 
     if (
       orderStatus === Status.SUCCESS &&
-      paymentMethod !== PaymentMethod.COD &&
+      paymentMethod !==
+        PaymentMethod.COD &&
       khaltiUrl
     ) {
-      toast.success("Redirecting to payment gateway...");
+      toast.success(
+        "Redirecting to payment gateway..."
+      );
+
+      dispatch(clearCart());
+      setOrderSubmitted(false);
       window.location.href = khaltiUrl;
     }
   }, [
@@ -147,19 +184,21 @@ const CheckoutPage = () => {
     khaltiUrl,
     paymentMethod,
     router,
+    dispatch,
+    orderSubmitted,
   ]);
 
-  // ⏳ loading state
+  // ✅ LOADING
   if (cartStatus === Status.LOADING) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex h-screen items-center justify-center">
         Loading cart...
       </div>
     );
   }
 
-return (
-  <div className="min-h-screen bg-linear-to-br from-orange-50 via-yellow-50 to-green-50">
+  return (
+     <div className="min-h-screen bg-linear-to-br from-orange-50 via-yellow-50 to-green-50">
     
     {/* Header */}
     <div className="border-b border-orange-100 bg-white/80 backdrop-blur-sm sticky top-0 z-20">
@@ -488,11 +527,22 @@ return (
     Pay with eSewa
   </button>
 )}
+
+{/* DEFAULT - NO PAYMENT METHOD SELECTED */}
+{!paymentMethod && (
+  <button
+    type="button"
+    disabled
+    className="mt-8 w-full rounded-2xl bg-gray-300 py-4 text-lg font-semibold text-gray-500 shadow-lg cursor-not-allowed"
+  >
+    Select Payment Method
+  </button>
+)}
         </div>
       </form>
     </div>
   </div>
-);
+  );
 };
 
 export default CheckoutPage;

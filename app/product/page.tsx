@@ -15,7 +15,7 @@ const Product = () => {
   const { product } = useAppSelector((store) => store.product);
   const { user } = useAppSelector((store) => store.auth);
   const router = useRouter();
-console.log(product,':product')
+
   useEffect(() => {
     dispatch(fetchProduct());
   }, [dispatch]);

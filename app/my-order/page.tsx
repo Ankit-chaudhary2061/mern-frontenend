@@ -17,10 +17,11 @@ const OrderPage = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const [date, setDate] = useState<string>("");
+  const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    dispatch(fetchMyOrders());
-  }, [dispatch]);
+useEffect(() => {
+  dispatch(fetchMyOrders(page));
+}, [dispatch, page]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -260,11 +261,17 @@ const OrderPage = () => {
             </p>
 
             <div className="flex gap-3 mt-4 md:mt-0">
-              <button className="px-5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-md transition">
+              <button
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+  disabled={page === 1}
+               className="px-5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-md transition">
                 Prev
               </button>
 
-              <button className="px-5 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md transition">
+              <button 
+                onClick={() => setPage((prev) => prev + 1)}
+                disabled={filteredOrders.length < 10}
+                className="px-5 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md transition">
                 Next
               </button>
             </div>
