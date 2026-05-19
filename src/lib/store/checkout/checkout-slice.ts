@@ -8,7 +8,7 @@ import api from "../../http/api";
 const initialState: OrderResponseData = {
   items: [],
   status: Status.LOADING,
-  khaltiUrl: null,
+
   myorders: [],
   orderDetails: [],
 };
@@ -23,9 +23,7 @@ const orderSlice = createSlice({
         setStatus(state: OrderResponseData, action: PayloadAction<Status>) {
             state.status = action.payload;
         },
-        setKhaltiUrl(state: OrderResponseData, action: PayloadAction<string | null>) {
-            state.khaltiUrl = action.payload;
-        },
+     
         setMyOrders(state: OrderResponseData, action: PayloadAction<MyOrderData[]>) {
             state.myorders = action.payload;
         },
@@ -76,53 +74,108 @@ const orderSlice = createSlice({
 })
 export default orderSlice.reducer;
 
-export const { setItems, setStatus, setKhaltiUrl, setMyOrders, setOrderDetails, updateOrderStatus, updatePaymentStatus } = orderSlice.actions;
+export const { setItems, setStatus,  setMyOrders, setOrderDetails, updateOrderStatus, updatePaymentStatus } = orderSlice.actions;
 
 // ================= THUNKS =================
-export function orderItem(data:OrderData){
-    return async function orderItemThunk(dispatch: AppDispatch){
-         try {
-             dispatch(setStatus(Status.LOADING));  
-             const response = await api.post ("/orders/create", 
-                 data
-             );
-    // ================= ESEWA =================
-       if (
+export function orderItem(data: OrderData) {
+  return async function orderItemThunk(dispatch: AppDispatch) {
+    try {
+      dispatch(setStatus(Status.LOADING));
+
+      const response = await api.post("/orders/create", data);
+
+      console.log(response.data);
+
+      // ================= eSewa =================
+      if (
         response.data.payment_url &&
         response.data.data
       ) {
+
         dispatch(setStatus(Status.SUCCESS));
 
-        window.location.href = response.data.payment_url;
-      } else {
-        dispatch(setStatus(Status.ERROR));
+        window.location.href =
+          response.data.payment_url;
+
+        return;
       }
-      // ================= KHALTI =================
-      if (response.data.payment_url && response.data.pidx) {
+
+      // ================= Khalti =================
+      if (
+        response.data.payment_url &&
+        response.data.pidx
+      ) {
+
         dispatch(setStatus(Status.SUCCESS));
-        dispatch(setKhaltiUrl(response.data.payment_url));
-      } else {
-        dispatch(setStatus(Status.ERROR));
+
+        window.location.href =
+          response.data.payment_url;
+
+        return;
       }
+
       // ================= COD =================
-   if (response.data.order) {
+      if (response.data.order) {
+
         dispatch(
           setItems([
             {
-              orderId: response.data.order._id,
-              productId: data.items[0].productId,
-              quantity: data.items[0].quantity,
+              orderId:
+                response.data.order._id,
+
+              productId:
+                data.items[0].productId,
+
+              quantity:
+                data.items[0].quantity,
             },
           ])
         );
 
         dispatch(setStatus(Status.SUCCESS));
+
+        return;
       }
-         } catch (error) {
-              console.log(error);
-            dispatch(setStatus(Status.ERROR));
-         }
-}}
+
+      dispatch(setStatus(Status.ERROR));
+
+    } catch (error) {
+
+      console.log(error);
+
+      dispatch(setStatus(Status.ERROR));
+    }
+  };
+}
+
+// export function orderItem(data: OrderData) {
+//   return async function orderItemThunk(
+//     dispatch: AppDispatch
+//   ) {
+
+//     try {
+
+//       dispatch(setStatus(Status.LOADING));
+
+//       const response = await api.post(
+//         "/orders/create",
+//         data
+//       );
+
+//       dispatch(setStatus(Status.SUCCESS));
+
+//       return response.data;
+
+//     } catch (error) {
+
+//       console.log(error);
+
+//       dispatch(setStatus(Status.ERROR));
+
+//       throw error;
+//     }
+//   };
+// }
 export function fetchMyOrders(page: number) {
   return async function fetchMyOrdersThunk(dispatch: AppDispatch) {
     try {
@@ -158,22 +211,38 @@ export function fetchMyOrderDetails(orderId: string) {
         }
     };
 }
-export function verifyKhaltiTransaction(pidx: string) {
-  return async function verifyKhaltiTransactionThunk(dispatch: AppDispatch) {
+export function verifyKhaltiTransaction(
+  pidx: string
+) {
+  return async function verifyKhaltiTransactionThunk(
+    dispatch: AppDispatch
+  ) {
+
     try {
-        dispatch(setStatus(Status.LOADING));    
-        const response = await api.post("/orders/verify-khalti", { pidx });
-        if (response.status === 200) {
-            dispatch(setStatus(Status.SUCCESS));
-            dispatch(setKhaltiUrl(null));
-        } else {
-            dispatch(setStatus(Status.ERROR));
-        }
-    } catch (error) {
-        console.log(error);
+
+      dispatch(setStatus(Status.LOADING));
+
+      const response = await api.post(
+        "/orders/verify-khalti",
+        { pidx }
+      );
+
+      if (response.status === 200) {
+
+        dispatch(setStatus(Status.SUCCESS));
+
+      } else {
+
         dispatch(setStatus(Status.ERROR));
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+      dispatch(setStatus(Status.ERROR));
     }
-  }
+  };
 }
 export const updateOrderStatusAsync =
   (orderId: string, orderStatus: OrderStatus) =>

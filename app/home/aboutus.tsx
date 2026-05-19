@@ -17,7 +17,7 @@ const AboutUs = () => {
   }, []);
 
   return (
-    <section className=" mx-auto  bg-white">
+    <section className="relative w-full   bg-white">
       <div className=" container py-[60px] md:py-[80px] lg:py-[100px]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 items-center w-full">
 
@@ -46,21 +46,7 @@ const AboutUs = () => {
             </p>
 
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center md:justify-start">
-              
-              <Link href="/about">
-                <button className="bg-[#326E3B] hover:bg-green-800 text-white px-6 py-3 rounded-full text-sm md:text-base font-semibold shadow-md hover:shadow-lg transition duration-300">
-                  Learn More
-                </button>
-              </Link>
-
-              <Link href="/shop">
-                <button className="border border-[#326E3B] text-[#326E3B] hover:bg-[#326E3B] hover:text-white px-6 py-3 rounded-full text-sm md:text-base font-semibold transition duration-300">
-                  Shop Now
-                </button>
-              </Link>
-
-            </div>
+           
           </div>
 
           {/* Image Section */}

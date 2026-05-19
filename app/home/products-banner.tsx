@@ -21,7 +21,7 @@ const ProductFeature = () => {
         data-aos='zoom-in-up'
       >
         <Image
-          src='/images/picking-tea.jpg'
+          src='/image/picking-tea.jpg'
           alt='GreenTea garden'
           fill
           className='object-cover'

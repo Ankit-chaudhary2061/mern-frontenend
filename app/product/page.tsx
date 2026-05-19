@@ -192,12 +192,14 @@ const handleShopNow = async (productId: string) => {
 
             {/* BUTTON */}
             <div className='flex justify-center pb-8'>
-              <button
-                onClick={() => setShowAll(!showAll)}
-                className='bg-[#326E3B] hover:bg-[#2a5a32] text-white px-8 py-4 font-bold text-base transition-colors duration-200 flex items-center gap-2 rounded-md cursor-pointer'
-              >
-                {showAll ? 'Show Less' : 'View More Products'}
-              </button>
+             <div className='flex justify-center pb-8'>
+  <button
+    onClick={() => router.push('/product?page=all')}
+    className='bg-[#326E3B] hover:bg-[#2a5a32] text-white px-8 py-4 font-bold text-base transition-colors duration-200 flex items-center gap-2 rounded-md cursor-pointer'
+  >
+    View More Products
+  </button>
+</div>
             </div>
 
           </div>

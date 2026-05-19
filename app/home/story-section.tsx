@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Image from 'next/image';
+import { div } from 'framer-motion/client';
 
 const StorySection = () => {
   useEffect(() => {
@@ -15,8 +16,9 @@ const StorySection = () => {
   }, []);
 
   return (
-    <div className='container mx-auto'>
-      <div className='py-[60px] md:py-[80px] lg:py-[100px]'>
+    <div className='relative w-full bg-amber-50'>
+    <div className='container mx-auto '>
+      <div className='py-[60px] md:py-[80px] lg:py-[100px] '>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 items-start w-full'>
           {/* Text Section */}
           <div
@@ -36,11 +38,11 @@ const StorySection = () => {
               soothes the body and mind.
             </p>
             <div className='flex justify-center md:justify-start'>
-              <button className='bg-[#326E3B] hover:bg-green-800 transition-all duration-300 rounded-lg shadow-md hover:shadow-lg cursor-pointer'>
+              {/* <button className='bg-[#326E3B] hover:bg-green-800 transition-all duration-300 rounded-lg shadow-md hover:shadow-lg cursor-pointer'>
                 <p className='text-[14px] md:text-[15px] lg:text-[16px] font-bold leading-[16px] text-white py-[12px] md:py-[14px] lg:py-[16px] px-[24px] md:px-[28px] lg:px-[32px] font-merriweather text-center'>
                   Learn More
                 </p>
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -59,6 +61,7 @@ const StorySection = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

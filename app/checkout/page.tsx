@@ -35,7 +35,7 @@ const CheckoutPage = () => {
 
 
   const {
-    khaltiUrl,
+  
     status: orderStatus,
   } = useAppSelector((store) => store.order);
 
@@ -142,51 +142,72 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     },
   };
 
+  // setOrderSubmitted(true);
+  // await dispatch(orderItem(orderData));
   setOrderSubmitted(true);
-  await dispatch(orderItem(orderData));
+
+const responseData = await dispatch(
+  orderItem(orderData) as any
+);
+
+console.log(responseData);
+
+// ================= Khalti =================
+if (
+  responseData?.payment_url &&
+  responseData?.pidx
+) {
+
+  window.location.href =
+    responseData.payment_url;
+
+  return;
+}
+
+// ================= eSewa =================
+if (
+  responseData?.payment_url &&
+  responseData?.data
+) {
+
+  window.location.href =
+    responseData.payment_url;
+
+  return;
+}
 };
 
   // ✅ SUCCESS / REDIRECT
-  useEffect(() => {
-    if (!orderSubmitted) return;
+useEffect(() => {
 
-    if (
-      orderStatus === Status.SUCCESS &&
-      paymentMethod === PaymentMethod.COD
-    ) {
-      toast.success(
-        "Order placed successfully!"
-      );
+  if (!orderSubmitted) return;
 
-      dispatch(clearCart());
-      setOrderSubmitted(false);
-      setTimeout(() => {
-        router.push("/my-order");
-      }, 1500);
-    }
+  // ================= COD =================
+  if (
+    orderStatus === Status.SUCCESS &&
+    paymentMethod === PaymentMethod.COD
+  ) {
 
-    if (
-      orderStatus === Status.SUCCESS &&
-      paymentMethod !==
-        PaymentMethod.COD &&
-      khaltiUrl
-    ) {
-      toast.success(
-        "Redirecting to payment gateway..."
-      );
+    toast.success(
+      "Order placed successfully!"
+    );
 
-      dispatch(clearCart());
-      setOrderSubmitted(false);
-      window.location.href = khaltiUrl;
-    }
-  }, [
-    orderStatus,
-    khaltiUrl,
-    paymentMethod,
-    router,
-    dispatch,
-    orderSubmitted,
-  ]);
+    dispatch(clearCart());
+
+    setOrderSubmitted(false);
+
+    setTimeout(() => {
+      router.push("/my-order");
+    }, 1500);
+  }
+
+}, [
+  orderStatus,
+  paymentMethod,
+  router,
+  dispatch,
+  orderSubmitted,
+]);
 
   // ✅ LOADING
   if (cartStatus === Status.LOADING) {

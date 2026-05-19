@@ -143,7 +143,7 @@ export interface OrderResponseData {
 
   items: OrderResponseItems[];
 
-  khaltiUrl: string | null;
+
 
   myorders: MyOrderData[];
 

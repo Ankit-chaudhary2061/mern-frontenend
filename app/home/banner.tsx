@@ -28,7 +28,7 @@ const Banner = () => {
         </p>
 
         {/* Shop Now Button */}
-        <Link href="/shop">
+        <Link href="/product">
           <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full text-sm sm:text-base font-semibold transition duration-300 shadow-lg">
             Shop Now
           </button>
