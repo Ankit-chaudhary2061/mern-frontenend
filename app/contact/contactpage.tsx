@@ -149,7 +149,7 @@ const ContactSection = () => {
                   We reply within 24 hours
                 </p>
                 <p className="text-[#326E3B] font-medium">
-                  shresthathakur@gmail.com
+                  ankitchau2061@gmail.com
                 </p>
               </div>
             </div>

@@ -53,7 +53,7 @@ const AboutUsSection = () => {
             </h2>
             {/* <div className="w-16 h-1 bg-orange-500 mb-6"></div> */}
             <p className="text-gray-600 leading-relaxed">
-              Our CEO, Mr. Shrestha, started Rampokha Green Tea with a vision to
+              Our CEO, Mr. chaudhary, started Rampokha Green Tea with a vision to
               bring the finest tea from Ilam to the world. From humble beginnings,
               his dedication has built a trusted tea brand focused on quality and sustainability.
             </p>
@@ -62,7 +62,7 @@ const AboutUsSection = () => {
           {/* Image */}
           <div data-aos="zoom-in">
             <Image
-              src="/image/rampokh-about-us.jpg"
+              src="/image/ankit.jpeg"
               alt="CEO"
               width={600}
               height={600}

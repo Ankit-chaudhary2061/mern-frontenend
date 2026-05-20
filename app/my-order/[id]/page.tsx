@@ -30,7 +30,10 @@ const MyOrderDetailsPage = () => {
   }, [id, dispatch]);
 
   // CANCEL ORDER
-
+  console.log("Order Details:", orderDetails);
+  orderDetails.forEach((item) => {
+    console.log(item.product?.coverImage?.path);
+  });
 
   // LOADING
   if (status === Status.LOADING) {

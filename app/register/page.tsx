@@ -61,23 +61,23 @@ const Register = ()=>{
 
     return (
         <>
-        <div className="w-full min-h-screen flex items-center justify-center p-4 bg-amber-50">
+        <div className="w-full min-h-screen flex items-center justify-center p-4 bg-[#ecf7ed]">
       <div className="relative w-full max-w-5xl">
 
-        <BorderAnimation>
-          <div className="flex flex-col md:flex-row w-full bg">
+     
+          <div className="flex flex-col md:flex-row w-full bg-white rounded-[2rem] shadow-2xl overflow-hidden">
 
             {/* LEFT SIDE - FORM */}
-            <div className="md:w-1/2 p-8 flex items-center justify-center md:border-r border-slate-700">
+            <div className="md:w-1/2 p-8 flex items-center justify-center md:border-r border-[#326E3B]/20 bg-[#f8fff4]">
               <div className="w-full max-w-md">
 
                 {/* Heading */}
                 <div className="text-center mb-8">
-                  <MessageCircleIcon className="w-12 h-12 mx-auto text-slate-400 mb-4" />
-                  <h2 className="text-2xl font-bold text-slate-200">
+                  <MessageCircleIcon className="w-12 h-12 mx-auto text-[#326E3B] mb-4" />
+                  <h2 className="text-2xl font-bold text-[#326E3B]">
                     Create an Account
                   </h2>
-                  <p className="text-slate-400">
+                  <p className="text-[#52655a]">
                     Join our community today!
                   </p>
                 </div>
@@ -91,7 +91,7 @@ const Register = ()=>{
                     placeholder="Username"
                     value={data.username}
                     onChange={handleChange}
-                    className="w-full p-3 rounded-lg bg-slate-800 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 rounded-lg bg-white text-slate-900 border border-[#326E3B]/20 focus:outline-none focus:ring-2 focus:ring-[#326E3B]"
                   />
 
                   <input
@@ -100,7 +100,7 @@ const Register = ()=>{
                     placeholder="Email"
                     value={data.email}
                     onChange={handleChange}
-                    className="w-full p-3 rounded-lg bg-slate-800 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 rounded-lg bg-white text-slate-900 border border-[#326E3B]/20 focus:outline-none focus:ring-2 focus:ring-[#326E3B]"
                   />
 
                   <input
@@ -109,13 +109,13 @@ const Register = ()=>{
                     placeholder="Password"
                     value={data.password}
                     onChange={handleChange}
-                    className="w-full p-3 rounded-lg bg-slate-800 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 rounded-lg bg-white text-slate-900 border border-[#326E3B]/20 focus:outline-none focus:ring-2 focus:ring-[#326E3B]"
                   />
 
                   <button
   type="submit"
   disabled={registerStatus === Status.LOADING}
-  className="w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition"
+  className="w-full p-3 rounded-lg bg-[#326E3B] hover:bg-[#25522d] text-white font-semibold transition"
 >
   {registerStatus === Status.LOADING ? "Registering..." : "Register"}
 </button>
@@ -128,9 +128,9 @@ const Register = ()=>{
 
                 </form>
                {/* Link to Login */}
-                <p className="text-center text-sm text-slate-300 mt-6">
+                <p className="text-center text-sm text-slate-600 mt-6">
                   Already have an account?{" "}
-                  <Link href="/login" className="text-blue-400 hover:underline font-medium">
+                  <Link href="/login" className="text-[#326E3B] hover:underline font-medium">
                     Log in here
                   </Link>
                 </p>
@@ -138,19 +138,19 @@ const Register = ()=>{
             </div>
 
             {/* RIGHT SIDE */}
-            <div className="md:w-1/2 hidden md:flex items-center justify-center p-8">
-              <div className="text-center text-slate-300">
+            <div className="md:w-1/2 hidden md:flex items-center justify-center p-8 bg-[#326E3B]">
+              <div className="text-center text-white">
                 <h3 className="text-3xl font-bold mb-4">
-                  Welcome to friends book (text- chat cat)
+                  Welcome to Friends Book
                 </h3>
-                <p className="text-slate-400">
-                  lets chat motherfucker yeta chai image rakhney ho
+                <p className="text-[#d7e8d8]">
+                  Connect with friends, join chats, and share moments.
                 </p>
               </div>
             </div>
 
           </div>
-        </BorderAnimation>
+       
 
       </div>
     </div>

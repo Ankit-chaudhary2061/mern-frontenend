@@ -52,12 +52,12 @@ const handleShopNow = async (productId: string) => {
 };;
 
   return (
-    <div className='bg-[rgb(247,244,244)] w-full'>
+    <div className='bg-[rgb(247,244,244)] px-[200px] w-full'>
       <div className='container mx-auto'>
         <div className='pt-16'>
 
           <h2 className='text-3xl leading-8 font-bold text-black'>
-            Our Products
+            We Serve
           </h2>
 
           <div className='pt-14'>
@@ -74,7 +74,7 @@ const handleShopNow = async (productId: string) => {
                   <Link href={`/product/${product._id}`}>
                     <div className='relative w-full rounded-xl overflow-hidden aspect-video mb-4'>
                       <Image
-                        src={product.image?.[0]?.path}
+                        src={product.coverImage?.path}
                         alt={product.name}
                         className='object-cover'
                         fill
@@ -111,9 +111,9 @@ const handleShopNow = async (productId: string) => {
 
                   {visibleProducts.indexOf(product) % 2 === 0 ? (
                     <>
-                      <Link href={`/product/${product._id}`} className='col-span-6 mb-8 relative h-87.5 rounded-xl overflow-hidden'>
+                      <Link href={`/product/${product._id}`} className='col-span-6 mb-8 relative aspect-video rounded-xl overflow-hidden'>
                         <Image
-                          src={product.image?.[0]?.path}
+                          src={product.coverImage?.path}
                           alt={product.name}
                           className='object-cover'
                           fill
@@ -173,16 +173,19 @@ const handleShopNow = async (productId: string) => {
                           </button>
                         </div>
                       </div>
-
-                      <Link href={`/product/${product._id}`} className='col-start-7 col-span-6 mb-8 relative h-87.5 rounded-xl overflow-hidden'>
-                        <Image
-                          src={product.image?.[0]?.path}
-                          alt={product.name}
-                          className='object-cover'
-                          fill
-                          sizes='50vw'
-                        />
-                      </Link>
+<Link
+  href={`/product/${product._id}`}
+  className="col-start-7 col-span-6 mb-8 bg-white rounded-xl p-4"
+>
+  <div className="relative w-full aspect-square">
+    <Image
+      src={product.coverImage?.path}
+      alt={product.name}
+      fill
+      className="object-contain"
+    />
+  </div>
+</Link>
                     </>
                   )}
 

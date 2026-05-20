@@ -90,20 +90,20 @@ const OTPVerification = () => {
       setTimer(60);
     };
     return(
-        <>
-         <div className="w-full min-h-screen flex items-center justify-center p-4 bg-slate-900">
+  
+         <div className="w-full min-h-screen flex items-center justify-center p-4 bg-[#ecf7ed]">
       <div className="relative w-full max-w-md">
 
-        <BorderAnimation>
-          <div className="p-8 text-center">
 
-            <MessageCircleIcon className="w-12 h-12 mx-auto text-slate-400 mb-4" />
+          <div className="p-8 text-center bg-white rounded-[2rem] shadow-2xl">
 
-            <h2 className="text-2xl font-bold text-white mb-2">
+            <MessageCircleIcon className="w-12 h-12 mx-auto text-[#326E3B] mb-4" />
+
+            <h2 className="text-2xl font-bold text-[#326E3B] mb-2">
               OTP Verification
             </h2>
 
-            <p className="text-slate-400 mb-6">
+            <p className="text-[#52655a] mb-6">
               Enter the 6 digit code sent to {email || "your email"}
             </p>
 
@@ -123,7 +123,7 @@ const OTPVerification = () => {
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                       handleChange(index, e.target.value)
                     }
-                    className="w-12 h-12 text-center text-xl rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-12 h-12 text-center text-xl rounded-lg bg-[#f8fff4] border border-[#326E3B]/20 text-[#326E3B] focus:outline-none focus:ring-2 focus:ring-[#326E3B]"
                   />
                 ))}
               </div>
@@ -131,20 +131,20 @@ const OTPVerification = () => {
               <button
                 type="submit"
                 disabled={otpStatus === Status.LOADING}
-                className="w-full py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition"
+                className="w-full py-3 rounded-lg bg-[#326E3B] hover:bg-[#25522d] text-white font-semibold transition"
               >
                 {otpStatus === Status.LOADING ? "Verifying..." : "Verify OTP"}
               </button>
             </form>
 
             {/* RESEND OTP */}
-            <div className="mt-6 text-sm text-slate-400">
+            <div className="mt-6 text-sm text-[#52655a]">
               {timer > 0 ? (
                 <p>Resend OTP in {timer}s</p>
               ) : (
                 <button
                   onClick={handleResendOtp}
-                  className="text-indigo-400 hover:underline"
+                  className="text-[#326E3B] hover:underline"
                 >
                   Resend OTP
                 </button>
@@ -152,12 +152,12 @@ const OTPVerification = () => {
             </div>
 
           </div>
-        </BorderAnimation>
+   
 
       </div>
     </div>
         
-        </>
+
     )
 }
 
