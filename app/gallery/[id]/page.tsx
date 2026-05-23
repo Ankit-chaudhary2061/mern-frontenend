@@ -31,21 +31,46 @@ const SinglePhoto = () => {
   }
 
   return (
-    <div className='container mx-auto p-8'>
-      <h1 className='text-3xl font-semibold mb-6'>Gallery Item</h1>
-      <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-        {galleryItem.image.map((img) => (
-          <div key={img.publicId} className='relative h-64 rounded-xl overflow-hidden shadow-lg'>
-            <Image
-              src={img.path}
-              alt={`Gallery image ${img.publicId}`}
-              fill
-              className='object-cover transition-transform duration-500 hover:scale-105'
-            />
-          </div>
-        ))}
+    // <div className='container mx-auto p-8'>
+    //   <h1 className='text-3xl font-semibold mb-6'>Gallery Item</h1>
+    //   <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+    //     {galleryItem.image.map((img) => (
+    //       <div key={img.publicId} className='relative h-64 rounded-xl overflow-hidden shadow-lg'>
+    //         <Image
+    //           src={img.path}
+    //           alt={`Gallery image ${img.publicId}`}
+    //           fill
+    //           className='object-cover transition-transform duration-500 hover:scale-105'
+    //         />
+    //       </div>
+    //     ))}
+    //   </div>
+    // </div>
+    <div className="container mx-auto px-[200px] py-12">
+
+  <h1 className="text-3xl font-semibold mb-8 text-gray-900">
+    Gallery Item
+  </h1>
+
+  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
+    {galleryItem.image.map((img) => (
+      <div
+        key={img.publicId}
+        className="relative h-64 rounded-xl overflow-hidden shadow-lg group"
+      >
+        <Image
+          src={img.path}
+          alt={`Gallery image ${img.publicId}`}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
       </div>
-    </div>
+    ))}
+
+  </div>
+
+</div>
   );
 };
 

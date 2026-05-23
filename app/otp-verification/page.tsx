@@ -91,71 +91,156 @@ const OTPVerification = () => {
     };
     return(
   
-         <div className="w-full min-h-screen flex items-center justify-center p-4 bg-[#ecf7ed]">
-      <div className="relative w-full max-w-md">
+    //      <div className="w-full min-h-screen flex items-center justify-center p-4 bg-[#ecf7ed]">
+    //   <div className="relative w-full max-w-md">
 
 
-          <div className="p-8 text-center bg-white rounded-[2rem] shadow-2xl">
+    //       <div className="p-8 text-center bg-white rounded-[2rem] shadow-2xl">
 
-            <MessageCircleIcon className="w-12 h-12 mx-auto text-[#326E3B] mb-4" />
+    //         <MessageCircleIcon className="w-12 h-12 mx-auto text-[#326E3B] mb-4" />
 
-            <h2 className="text-2xl font-bold text-[#326E3B] mb-2">
-              OTP Verification
-            </h2>
+    //         <h2 className="text-2xl font-bold text-[#326E3B] mb-2">
+    //           OTP Verification
+    //         </h2>
 
-            <p className="text-[#52655a] mb-6">
-              Enter the 6 digit code sent to {email || "your email"}
-            </p>
+    //         <p className="text-[#52655a] mb-6">
+    //           Enter the 6 digit code sent to {email || "your email"}
+    //         </p>
 
-            {/* OTP FORM */}
-            <form onSubmit={handleSubmit} className="space-y-6">
+    //         {/* OTP FORM */}
+    //         <form onSubmit={handleSubmit} className="space-y-6">
 
-              <div className="flex justify-between gap-2">
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => {
-                      inputRefs.current[index] = el;
-                    }}
-                    type="text"
-                    value={digit}
-                    maxLength={1}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleChange(index, e.target.value)
-                    }
-                    className="w-12 h-12 text-center text-xl rounded-lg bg-[#f8fff4] border border-[#326E3B]/20 text-[#326E3B] focus:outline-none focus:ring-2 focus:ring-[#326E3B]"
-                  />
-                ))}
-              </div>
+    //           <div className="flex justify-between gap-2">
+    //             {otp.map((digit, index) => (
+    //               <input
+    //                 key={index}
+    //                 ref={(el) => {
+    //                   inputRefs.current[index] = el;
+    //                 }}
+    //                 type="text"
+    //                 value={digit}
+    //                 maxLength={1}
+    //                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
+    //                   handleChange(index, e.target.value)
+    //                 }
+    //                 className="w-12 h-12 text-center text-xl rounded-lg bg-[#f8fff4] border border-[#326E3B]/20 text-[#326E3B] focus:outline-none focus:ring-2 focus:ring-[#326E3B]"
+    //               />
+    //             ))}
+    //           </div>
 
-              <button
-                type="submit"
-                disabled={otpStatus === Status.LOADING}
-                className="w-full py-3 rounded-lg bg-[#326E3B] hover:bg-[#25522d] text-white font-semibold transition"
-              >
-                {otpStatus === Status.LOADING ? "Verifying..." : "Verify OTP"}
-              </button>
-            </form>
+    //           <button
+    //             type="submit"
+    //             disabled={otpStatus === Status.LOADING}
+    //             className="w-full py-3 rounded-lg bg-[#326E3B] hover:bg-[#25522d] text-white font-semibold transition"
+    //           >
+    //             {otpStatus === Status.LOADING ? "Verifying..." : "Verify OTP"}
+    //           </button>
+    //         </form>
 
-            {/* RESEND OTP */}
-            <div className="mt-6 text-sm text-[#52655a]">
-              {timer > 0 ? (
-                <p>Resend OTP in {timer}s</p>
-              ) : (
-                <button
-                  onClick={handleResendOtp}
-                  className="text-[#326E3B] hover:underline"
-                >
-                  Resend OTP
-                </button>
-              )}
-            </div>
+    //         {/* RESEND OTP */}
+    //         <div className="mt-6 text-sm text-[#52655a]">
+    //           {timer > 0 ? (
+    //             <p>Resend OTP in {timer}s</p>
+    //           ) : (
+    //             <button
+    //               onClick={handleResendOtp}
+    //               className="text-[#326E3B] hover:underline"
+    //             >
+    //               Resend OTP
+    //             </button>
+    //           )}
+    //         </div>
 
-          </div>
+    //       </div>
    
 
+    //   </div>
+    // </div>
+
+    <div className="w-full min-h-screen flex items-center justify-center bg-[#ecf7ed] p-4">
+
+  <div className="w-full max-w-md">
+
+    <div className="p-8 text-center bg-white rounded-[2rem] shadow-2xl border border-[#326E3B]/10">
+
+      {/* Icon */}
+      <MessageCircleIcon className="w-12 h-12 mx-auto text-[#326E3B] mb-4" />
+
+      {/* Heading */}
+      <h2 className="text-2xl font-bold text-[#326E3B] mb-2">
+        OTP Verification
+      </h2>
+
+      <p className="text-gray-600 mb-6">
+        Enter the 6 digit code sent to{" "}
+        <span className="font-medium text-[#326E3B]">
+          {email || "your email"}
+        </span>
+      </p>
+
+      {/* OTP FORM */}
+      <form onSubmit={handleSubmit} className="space-y-6">
+
+        <div className="flex justify-between gap-2">
+
+          {otp.map((digit, index) => (
+            <input
+              key={index}
+              ref={(el) => {
+                inputRefs.current[index] = el;
+              }}
+              type="text"
+              value={digit}
+              maxLength={1}
+              onChange={(e) =>
+                handleChange(index, e.target.value)
+              }
+              className="w-12 h-12 text-center text-xl rounded-lg bg-[#f8fff4] border border-gray-200 text-[#326E3B] focus:outline-none focus:ring-2 focus:ring-[#326E3B] transition"
+            />
+          ))}
+
+        </div>
+
+        {/* Button */}
+        <button
+          type="submit"
+          disabled={otpStatus === Status.LOADING}
+          className={`w-full py-3 rounded-lg font-semibold text-white transition ${
+            otpStatus === Status.LOADING
+              ? "bg-green-300 cursor-not-allowed"
+              : "bg-[#326E3B] hover:bg-[#25522d]"
+          }`}
+        >
+          {otpStatus === Status.LOADING
+            ? "Verifying..."
+            : "Verify OTP"}
+        </button>
+
+      </form>
+
+      {/* RESEND */}
+      <div className="mt-6 text-sm text-gray-600">
+        {timer > 0 ? (
+          <p>
+            Resend OTP in{" "}
+            <span className="text-[#326E3B] font-semibold">
+              {timer}s
+            </span>
+          </p>
+        ) : (
+          <button
+            onClick={handleResendOtp}
+            className="text-[#326E3B] hover:underline font-medium"
+          >
+            Resend OTP
+          </button>
+        )}
       </div>
+
     </div>
+
+  </div>
+</div>
         
 
     )

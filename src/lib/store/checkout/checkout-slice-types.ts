@@ -73,6 +73,7 @@ export interface UserData {
   _id?: string;
   username: string;
   email: string;
+  phoneNumber?: string;
 }
 
 // ================= MY ORDER =================
@@ -80,7 +81,7 @@ export interface UserData {
 export interface MyOrderData {
   _id: string;
 
-  user?: string;
+  user?: UserData;
 
   shippingAddress: string;
 

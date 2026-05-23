@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '@/src/lib/store/hook';
 import { fetchMe, logoutUser } from '@/src/lib/store/auth/auth-slice';
 import { Status } from '../lib/store/types/global-types';
 import { toast } from 'react-toastify';
+import { nav } from 'framer-motion/client';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,29 +28,28 @@ const Header = () => {
 
   return (
     <nav className="bg-[#326E3B] sticky top-0 z-50">
-      <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-3">
+      <div className="container mx-auto px-[200px] py-[12px]">
         <div className="flex items-center justify-between relative">
 
-          {/* LEFT - Logo */}
+        
           <div className="flex items-center">
             <Image
               src="/image/logo.png"
               alt="tea-garden"
-              width={56}
-              height={56}
+              width={64}
+              height={64}
               className="object-contain w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16"
             />
           </div>
 
-          {/* CENTER - Menu */}
-          <ul className="hidden md:flex lg:flex absolute left-1/2 -translate-x-1/2 gap-6 lg:gap-10 text-white text-[15px] lg:text-[16px] whitespace-nowrap">
+          <ul className="hidden md:flex lg:flex absolute left-1/2 -translate-x-1/2 gap-[36px] lg:gap-10 text-[#fffff] text-[16px] lg:text-[16px] whitespace-nowrap">
             <li className="nav-item"><Link href="/">Home</Link></li>
             <li className="nav-item"><Link href="/about">About Us</Link></li>
             <li className="nav-item"><Link href="/contact">Contact Us</Link></li>
             <li className="nav-item"><Link href="/my-order">My Orders</Link></li>
           </ul>
 
-          {/* RIGHT - Actions */}
+
           <div className="hidden md:flex items-center gap-4 lg:gap-6 text-white">
 
             <Link href="/cart" className="relative hover:scale-110 transition">
@@ -132,6 +132,8 @@ const Header = () => {
         }
       `}</style>
     </nav>
+
+
   );
 };
 

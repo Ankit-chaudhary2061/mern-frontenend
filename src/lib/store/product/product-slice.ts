@@ -41,12 +41,12 @@ export const {
 } = productSlice.actions;
 
 // Fetch all products
-export function fetchProduct() {
+export function fetchProduct(page: number = 1) {
   return async function fetchProductThunk(dispatch: AppDispatch) {
     dispatch(setStatus(Status.LOADING));
 
     try {
-      const response = await api.get("/products");
+      const response = await api.get(`/products?page=${page}`);
 
       if (response.status === 200) {
         const { data } = response.data;
